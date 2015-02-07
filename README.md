@@ -4,19 +4,17 @@
 
 Team 
 ====
-Name :  Rohit Kumar Malik
+- Name :  Rohit Kumar Malik
+- UFID: 94711368
+- Mail Id: rkmalik@ufl.edu
 
-UFID: 	94711368
-
-Mail Id: rkmalik@ufl.edu
-
-Name: Vignesh Miriyala
-
-UFId: 8819-3994
-
-Mail Id: Vigneshmiriyala@ufl.edu
+- Name: Vignesh Miriyala
+- UFId: 8819-3994
+- Mail Id: vigneshmiriyala@ufl.edu
 
 
+Instructions
+============
 Test driver for Assignment 1 heap DBFile (spring 2015 dbi) 
 
 This test driver gives a menu-based interface to three options that allows you to test your code:
@@ -35,7 +33,7 @@ and follow the on-screen instructions.
 
 
 Google Test 
-======================
+===========
 
 To compile the driver, type
 	make UnitTest.out
