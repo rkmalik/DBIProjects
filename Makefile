@@ -118,22 +118,26 @@ gtest-all.o : $(GOOGLE_TEST_FUSED_H) $(GOOTLE_TEST_FUSED_TEST_ALL_CC)
 gtest_main.o : $(GOOGLE_TEST_FUSED_H) $(GTEST_MAIN_CC)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(GTEST_MAIN_CC) -o $(BIN)gtest_main.o
 
+#sample.o : $(SRC)sample1.cc
+#	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(SRC)sample1.cc  -o $(BIN)sample.o
 
-UnitTest.o : $(SRC)DBFile.cc $(SRC)DBFile.h $(SRC)UnitTest.cc $(GOOGLE_TEST_FUSED_H)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(SRC)UnitTest.cc  -o $(BIN)UnitTest.o -lgtest_main
+unittest.o : $(SRC)DBFile.cc $(SRC)DBFile.h $(SRC)UnitTest.cc $(GOOGLE_TEST_FUSED_H)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(SRC)UnitTest.cc  -o $(BIN)unittest.o
 
-UnitTest : 	Record.o Comparison.o \
+unittest : 	Record.o Comparison.o \
 				ComparisonEngine.o File.o \
 				y.tab.o lex.yy.o \
 				BaseFile.o HeapDBFile.o \
-				DBFile.o UnitTest.o \
+				DBFile.o unittest.o \
+				#sample.o \
 				gtest-all.o gtest_main.o
 				#mv gtest-all.o $(BIN)gtest-all.o
 				#mv gtest_main.o $(BIN)gtest_main.o
-	$(CC) -o $(BIN)UnitTest.out \
-	$(BIN)UnitTest.o $(BIN)Record.o \
+	$(CC) -o $(BIN)unittest.out \
+	$(BIN)unittest.o $(BIN)Record.o \
 	$(BIN)Comparison.o $(BIN)ComparisonEngine.o \
 	$(BIN)File.o $(BIN)y.tab.o \
 	$(BIN)lex.yy.o $(BIN)BaseFile.o \
+	$(BIN)BaseFile.o
 	$(BIN)HeapDBFile.o $(BIN)DBFile.o $(BIN)UnitTest.o \
-	$(BIN)gtest-all.o $(BIN)gtest_main.o
+	$(BIN)gtest-all.o $(BIN)gtest_main.o -lfl
