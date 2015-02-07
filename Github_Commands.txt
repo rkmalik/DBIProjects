@@ -1,0 +1,35 @@
+https://github.com/rkmalik/DataBaseImplementation.git
+
+echo "# DBI Team" >> README
+git init
+git add README
+git commit -m "Project 1 Heap File"
+git remote add DBI https://github.com/rkmalik/DBITeam.git
+git push -u DBI master
+
+
+git remote -v
+# Verify new remote
+# origin  https://github.com/user/repo.git (fetch)
+# origin  https://github.com/user/repo.git (push)
+
+git remote rm destination
+# Remove remote
+git remote -v
+# Verify it's gone
+# origin  https://github.com/OWNER/REPOSITORY.git (fetch)
+# origin  https://github.com/OWNER/REPOSITORY.git (push)
+
+=======================
+echo "# DBIProjects" >> README.md
+git init
+git add README.md
+git commit -m "first commit"
+git remote add origin https://github.com/rkmalik/DBIProjects.git
+git push -u origin master
+
+…or push an existing repository from the command line
+
+git remote add origin https://github.com/rkmalik/DBIProjects.git
+git push -u origin master
+
