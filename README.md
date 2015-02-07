@@ -1,11 +1,10 @@
 # DBIProjects
+===============
 
-Team Details:-
-======================================================================================
+
 Name :  Rohit Kumar Malik
 UFID: 	94711368
 Mail Id: rkmalik@ufl.edu
-
 
 Name: Vignesh Miriyala
 UFId: 8819-3994
