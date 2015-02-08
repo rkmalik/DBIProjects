@@ -26,6 +26,7 @@ int BaseFile::Open (char* fpath) {
 
 int BaseFile::Close ()
 {
+    page.EmptyItOut ();
 	file.Close ();
 	return 0;
 }

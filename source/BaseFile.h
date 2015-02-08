@@ -16,7 +16,7 @@ protected:
 	// This offset starts with zero index
 	off_t 	currentPageIndex;
 	// This is the page on which we are currently working
-	Page 	currentPage;
+	Page 	page;
 	// Pages added to the file so far
 	int 	totalPageCount;
 	File 	file;

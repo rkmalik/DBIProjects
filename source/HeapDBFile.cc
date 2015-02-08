@@ -17,18 +17,18 @@ HeapDBFile::~HeapDBFile() {
 }
 
 void HeapDBFile::MoveFirst(){
-	// Setting the currentPage to first record.
+	// Setting the page to first record.
 	currentPageIndex = (off_t)0;
-	//currentPage.EmptyItOut ();
+	//page.EmptyItOut ();
 	cout << "File Length = " << file.GetLength () << endl;
 
 	if (file.GetLength () != 0) {
 		#ifdef verbose
-			cout << "Getting the Page " << currentPageIndex << endl;
+			cout << "Getting the Page " << pageIndex << endl;
 		#endif
-		file.GetPage(&currentPage, currentPageIndex);
+		file.GetPage(&page, currentPageIndex);
 	} else {
-		currentPage.EmptyItOut ();
+		page.EmptyItOut ();
 	}
 }
 
@@ -37,12 +37,12 @@ void HeapDBFile::Add (Record &addMe)
 	// Keep on adding the record to the page and empty once it is full
 	//cout << "Page is added to the file" << endl;
 
-	if (currentPage.Append (&addMe) ==0) {
-		cout << "Page is full needs to be added to the file" << endl;
-		file.AddPage (&currentPage, ++currentPageIndex);
+	if (page.Append (&addMe) ==0) {
+		//cout << "Page is full needs to be added to the file" << endl;
+		file.AddPage (&page, ++currentPageIndex);
 		totalPageCount++;
-		currentPage.EmptyItOut ();
-		cout << "Page is added to the file" << endl;
+		page.EmptyItOut ();
+		//cout << "Page is added to the file" << endl;
 	}
 }
 
@@ -62,7 +62,7 @@ void HeapDBFile::Load (Schema &mySchema, char *loadMe)
 		rcount++;
 	}
 
-	file.AddPage (&currentPage, ++currentPageIndex);
+	file.AddPage (&page, ++currentPageIndex);
 	totalPageCount++;
 
 	cout << "Total Records loaded to the File = " << rcount << endl \
@@ -80,7 +80,7 @@ int HeapDBFile::GetNext (Record& fetchme) {
 
 	// currentPage is now having the first page in the file with MoveFirst
     //
-	while (!currentPage.GetFirst(&fetchme)) {
+	while (!page.GetFirst(&fetchme)) {
 
         // Check if the next page is available or not.
         int pagecount = ((int)file.GetLength ()-2);
@@ -90,7 +90,7 @@ int HeapDBFile::GetNext (Record& fetchme) {
             return 0;
 		}
 
-		file.GetPage(&currentPage, currentPageIndex);
+		file.GetPage(&page, currentPageIndex);
 	}
 	return 1;
 }
