@@ -14,7 +14,7 @@ class BaseFile {
 
 protected:
 	// This offset starts with zero index
-	off_t 	currentPageIndex;
+	off_t 	index;
 	// This is the page on which we are currently working
 	Page 	page;
 	// Pages added to the file so far

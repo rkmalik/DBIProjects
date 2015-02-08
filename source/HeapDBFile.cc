@@ -18,7 +18,7 @@ HeapDBFile::~HeapDBFile() {
 
 void HeapDBFile::MoveFirst(){
 	// Setting the page to first record.
-	currentPageIndex = (off_t)0;
+	index = (off_t)0;
 	//page.EmptyItOut ();
 	cout << "File Length = " << file.GetLength () << endl;
 
@@ -26,7 +26,7 @@ void HeapDBFile::MoveFirst(){
 		#ifdef verbose
 			cout << "Getting the Page " << pageIndex << endl;
 		#endif
-		file.GetPage(&page, currentPageIndex);
+		file.GetPage(&page, index);
 	} else {
 		page.EmptyItOut ();
 	}
@@ -39,7 +39,7 @@ void HeapDBFile::Add (Record &addMe)
 
 	if (page.Append (&addMe) ==0) {
 		//cout << "Page is full needs to be added to the file" << endl;
-		file.AddPage (&page, ++currentPageIndex);
+		file.AddPage (&page, ++index);
 		totalPageCount++;
 		page.EmptyItOut ();
 		//cout << "Page is added to the file" << endl;
@@ -62,11 +62,11 @@ void HeapDBFile::Load (Schema &mySchema, char *loadMe)
 		rcount++;
 	}
 
-	file.AddPage (&page, ++currentPageIndex);
+	file.AddPage (&page, ++index);
 	totalPageCount++;
 
 	cout << "Total Records loaded to the File = " << rcount << endl \
-	<< " Current Page Index  = " << currentPageIndex << endl \
+	<< " Current Page Index  = " << index << endl \
 	<< " Total Pages  = " << totalPageCount << endl;
 	rcount = 0;
 }
@@ -85,12 +85,12 @@ int HeapDBFile::GetNext (Record& fetchme) {
         // Check if the next page is available or not.
         int pagecount = ((int)file.GetLength ()-2);
 
-		if(++currentPageIndex > pagecount) {
+		if(++index > pagecount) {
             //cout << "Total Page Count = " << pagecount << endl;
             return 0;
 		}
 
-		file.GetPage(&page, currentPageIndex);
+		file.GetPage(&page, index);
 	}
 	return 1;
 }

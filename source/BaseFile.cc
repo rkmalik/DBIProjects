@@ -9,7 +9,7 @@ using namespace std;
 
 BaseFile::BaseFile()
 {
-	currentPageIndex = -1;
+	index = -1;
 	totalPageCount = 0;
 
 }
