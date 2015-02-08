@@ -4,12 +4,15 @@
 
 // make sure that the file path/dir information below is correct
 //char *dbfile_dir = ""; // dir where binary heap files should be stored
-//char *tpch_dir ="/cise/tmp/dbi_sp11/DATA/10M/"; // dir where dbgen tpch files (extension *.tbl) can be found
+char *tpch_dir ="/cise/tmp/dbi_sp11/DATA/10M/";
+
+// dir where dbgen tpch files (extension *.tbl) can be found
 
 
-char *dbfile_dir = "./dbfiles/";
-char *tpch_dir ="/home/rkmalik/Desktop/DBI-Project1/Project1-A1Test1/tpch/";
-char *catalog_path = "../source/catalog";
+char *dbfile_dir = "./bin/dbfiles/";
+//char *tpch_dir ="/home/rkmalik/Desktop/DBI-Project1/Project1-A1Test1/tpch/";
+//char *tpch_dir ="./bin/10M/";
+char *catalog_path = "./source/catalog";
 
 using namespace std;
 
@@ -86,6 +89,7 @@ void test3 () {
 }
 
 int main () {
+
 
 	setup (catalog_path, dbfile_dir, tpch_dir);
 

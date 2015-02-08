@@ -81,8 +81,15 @@ int HeapDBFile::GetNext (Record& fetchme) {
 	// currentPage is now having the first page in the file with MoveFirst
     //
 	while (!currentPage.GetFirst(&fetchme)) {
-		if(++currentPageIndex > totalPageCount)
-			return 0;
+
+        // Check if the next page is available or not.
+        int pagecount = ((int)file.GetLength ()-2);
+
+		if(++currentPageIndex > pagecount) {
+            //cout << "Total Page Count = " << pagecount << endl;
+            return 0;
+		}
+
 		file.GetPage(&currentPage, currentPageIndex);
 	}
 	return 1;
