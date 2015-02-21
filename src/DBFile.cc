@@ -26,7 +26,7 @@ int DBFile::Create (char *f_path, fType f_type, void *startup) {
 	{
 		case heap:
 
-			mydbfile = new HeapDBFile ();
+			mydbfile = new HeapDBFile();
 			if (mydbfile== NULL){
 				cout << "Failed to Create a Heap File" << endl;
 			}
@@ -58,7 +58,7 @@ int DBFile::Open (char *f_path) {
 	int ret = 0;
 	cout << "Opening the file " << f_path<< endl;
 	if (mydbfile==NULL)
-		mydbfile = new HeapDBFile ();
+		mydbfile = new HeapDBFile();
 
 	ret = mydbfile->Open (f_path);
 	if (ret == 1)

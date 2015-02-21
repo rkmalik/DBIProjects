@@ -8,7 +8,7 @@ tag = -n
 endif
 
 BIN = ./bin/
-SRC = ./source/
+SRC = ./src/
 
 test.out: 	Record.o \
 			Comparison.o \

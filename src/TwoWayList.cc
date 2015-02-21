@@ -6,8 +6,6 @@
 #include <iostream>
 #include <stdlib.h>
 
-//#define verbose
-
 using namespace std;
 
 
@@ -265,17 +263,12 @@ template <class Type> void
 TwoWayList <Type> :: Remove (Type *Item)
 {
 
-
 	Node *temp = list->current->next;
 	list->current->next = temp->next;
 	temp->next->previous = list->current;
-	#ifdef verbose
-		cout << "Reached Here TwoWayList:: Remove Start" << endl;
-	#endif
+	
 	Item->Consume(temp->data);
-#ifdef verbose
-		cout << "Reached Here TwoWayList:: Remove End " << endl;
-	#endif
+
 	delete temp;
 
 	(list->rightSize)--;

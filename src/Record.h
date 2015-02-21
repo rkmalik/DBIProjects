@@ -32,7 +32,6 @@ private:
 	char* GetBits ();
 	void SetBits (char *bits);
 	void CopyBits(char *bits, int b_len);
-
 public:
 	Record ();
 	~Record();
@@ -41,7 +40,7 @@ public:
 	// this call, fromMe will no longer have anything inside of it
 	void Consume (Record *fromMe);
 
-	// make a copy of the record fromMe; note that this is far more 
+	// make a copy of the record fromMe; note that this is far more
 	// expensive (requiring a bit-by-bit copy) than Consume, which is
 	// only a pointer operation
 	void Copy (Record *copyMe);
@@ -51,7 +50,7 @@ public:
 	// if there is an error and returns a 1 otherwise
 	int SuckNextRecord (Schema *mySchema, FILE *textFile);
 
-	// this projects away various attributes... 
+	// this projects away various attributes...
 	// the array attsToKeep should be sorted, and lists all of the attributes
 	// that should still be in the record after Project is called.  numAttsNow
 	// tells how many attributes are currently in the record
@@ -59,7 +58,7 @@ public:
 
 	// takes two input records and creates a new record by concatenating them;
 	// this is useful for a join operation
-	void MergeRecords (Record *left, Record *right, int numAttsLeft, 
+	void MergeRecords (Record *left, Record *right, int numAttsLeft,
 		int numAttsRight, int *attsToKeep, int numAttsToKeep, int startOfRight);
 
 	// prints the contents of the record; this requires

@@ -1,15 +1,12 @@
 #include "File.h"
 #include "TwoWayList.cc"
-
+#include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <string.h>
 #include <iostream>
 #include <stdlib.h>
-#include <unistd.h>
-
-//#define verbose
 
 
 
@@ -37,7 +34,7 @@ void Page :: EmptyItOut () {
 		Record temp;
 		if (!GetFirst (&temp))
 			break;
-	}	
+	}
 
 	// reset the page size
 	curSizeInBytes = sizeof (int);
@@ -47,33 +44,20 @@ void Page :: EmptyItOut () {
 
 int Page :: GetFirst (Record *firstOne) {
 
-
 	// move to the first record
 	myRecs->MoveToStart ();
 
-	// make sure there is data 
+	// make sure there is data
 	if (!myRecs->RightLength ()) {
 		return 0;
 	}
-
-
-	#ifdef verbose
-		cout << "Reached Here MoveFirst::GetFirst " << endl;
-	#endif
 
 	// and remove it
 	myRecs->Remove (firstOne);
 	numRecs--;
 
-
-#ifdef verbose
-		cout << "Reached Here MoveFirst::GetFirst " << endl;
-	#endif
-
 	char *b = firstOne->GetBits();
 	curSizeInBytes -= ((int *) b)[0];
-
-
 
 	return 1;
 }
@@ -95,7 +79,7 @@ int Page :: Append (Record *addMe) {
 	myRecs->Insert(addMe);
 	numRecs++;
 
-	return 1;	
+	return 1;
 }
 
 
@@ -108,9 +92,9 @@ void Page :: ToBinary (char *bits) {
 
 	// and copy the records one-by-one
 	myRecs->MoveToStart ();
-	for (int i = 0; i < numRecs; i++) {	
+	for (int i = 0; i < numRecs; i++) {
 		char *b = myRecs->Current(0)->GetBits();
-		
+
 		// copy over the bits of the current record
 		memcpy (curPos, b, ((int *) b)[0]);
 		curPos += ((int *) b)[0];
@@ -202,7 +186,6 @@ void File :: GetPage (Page *putItHere, off_t whichPage) {
 	putItHere->FromBinary (bits);
 	delete [] bits;
 
-	
 }
 
 
@@ -214,7 +197,7 @@ void File :: AddPage (Page *addMe, off_t whichPage) {
 	// if we are trying to add past the end of the file, then
 	// zero all of the pages out
 	if (whichPage >= curLength) {
-		
+
 		// do the zeroing
 		for (off_t i = curLength; i < whichPage; i++) {
 			int foo = 0;
@@ -223,7 +206,7 @@ void File :: AddPage (Page *addMe, off_t whichPage) {
 		}
 
 		// set the size
-		curLength = whichPage + 1;	
+		curLength = whichPage + 1;
 	}
 
 	// now write the page
@@ -296,7 +279,7 @@ int File :: Close () {
 
 	// and return the size
 	return curLength;
-	
+
 }
 
 
