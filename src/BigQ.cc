@@ -3,19 +3,23 @@
 #include "ComparisonEngine.h"
 #include <vector>
 #include <algorithm>
+#include "Record.h"
 
 
 void *tpmms(void* arg) {
     BigQutil *bigQutil = (BigQutil *) arg;
-    Record temp;
-    vector<Record*> recArray;
-    while(bigQutil->in->Remove(&temp)) {
+    Record * temp = new Record();
+    vector<Record *> recArray;
+    while(bigQutil->in->Remove(temp)) {
         //bigQutil->out->Insert(&temp);
-        recArray.push_back(&temp);
+        recArray.push_back(temp);
+	//temp->~Record();
+    	temp = new Record();
+
     }
     sort(recArray.begin(),recArray.end(),RecordComparator(bigQutil->order));
-    for (std::vector<Record*>::iterator it=recArray.begin(); it!=recArray.end(); ++it)
-        bigQutil->out->Insert(*it);
+    for (std::vector<Record *>::iterator it=recArray.begin(); it!=recArray.end(); ++it)
+        bigQutil->out->Insert((*it));
 
 }
 BigQ :: BigQ (Pipe &in, Pipe &out, OrderMaker &sortorder, int runlen) {
