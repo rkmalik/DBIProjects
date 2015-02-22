@@ -20,6 +20,8 @@ test.out: 	Record.o \
 			lex.yy.o \
 			test.o \
 			BaseFile.o \
+			Pipe.o\
+			BigQ.o\
 			HeapDBFile.o
 			$(CC) -o $(BIN)test.out \
 			$(BIN)Record.o \
@@ -32,7 +34,9 @@ test.out: 	Record.o \
 			$(BIN)lex.yy.o \
 			$(BIN)test.o \
 			$(BIN)BaseFile.o \
-			$(BIN)HeapDBFile.o -lfl
+			$(BIN)Pipe.o\
+			$(BIN)BigQ.o\
+			$(BIN)HeapDBFile.o -lfl -lpthread
 
 #main: Record.o Comparison.o ComparisonEngine.o Schema.o File.o y.tab.o lex.yy.o main.o BaseFile.o DBFile.o HeapDBFile.o
 	##$(CC) -o main Record.o Comparison.o ComparisonEngine.o Schema.o File.o y.tab.o lex.yy.o main.o BaseFile.o DBFile.o  -lfl
@@ -63,6 +67,12 @@ Schema.o: $(SRC)Schema.cc
 
 BaseFile.o: $(SRC)BaseFile.cc
 	$(CC) -g -c $(SRC)BaseFile.cc -o $(BIN)BaseFile.o
+
+Pipe.o: $(SRC)Pipe.cc
+	$(CC) -g -c $(SRC)Pipe.cc -o $(BIN)Pipe.o
+
+BigQ.o: $(SRC)BigQ.cc
+	$(CC) -g -c $(SRC)BigQ.cc -o $(BIN)BigQ.o
 
 HeapDBFile.o: $(SRC)HeapDBFile.cc $(SRC)BaseFile.cc
 	$(CC) -g -c $(SRC)HeapDBFile.cc -o $(BIN)HeapDBFile.o
