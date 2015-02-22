@@ -4,24 +4,66 @@
 #include <vector>
 #include <algorithm>
 #include "Record.h"
-
+#include "DBFile.h"
+#include "HeapDBFile.h"
 
 void *tpmms(void* arg) {
     BigQutil *bigQutil = (BigQutil *) arg;
     Record * temp = new Record();
-    vector<Record *> recArray;
-    while(bigQutil->in->Remove(temp)) {
-        //bigQutil->out->Insert(&temp);
-        recArray.push_back(temp);
-	//temp->~Record();
-    	temp = new Record();
+    DBFile tempfile;
+    tempfile.Create ("./bin/temp", heap, NULL);
+    tempfile.Open("./bin/temp");
+
+
+    int runlength = bigQutil->runlen;
+    int run_size= PAGE_SIZE * runlength;
+    //
+    while(true) {
+        vector<Record *> recArray;
+        int totalsize = 0;
+        int page_count =0;
+        while(bigQutil->in->Remove(temp)) {
+            //bigQutil->out->Insert(&temp);
+            totalsize += temp->GetSize();
+
+           // cout << totalsize << "   " <<  temp->GetSize () << endl;
+            if(totalsize > PAGE_SIZE) {
+                page_count++;
+                totalsize = temp->GetSize();
+            }
+            if(page_count == runlength) {
+                cout << "run completed" <<endl;
+                break;
+            }
+            else {
+                recArray.push_back(temp);
+                temp = new Record();
+            }
+        }
+        if(totalsize == 0) //no more records in input pipe
+            break;
+        sort(recArray.begin(),recArray.end(),RecordComparator(bigQutil->order));
+
+        for (std::vector<Record *>::iterator it=recArray.begin(); it!=recArray.end(); ++it) {
+            bigQutil->out->Insert((*it));
+            tempfile.Add(*(*it));
+            //vector <Record*> ::iterator ittem = recArray.erase(it);
+            //delete (*ittem);
+        }
 
     }
-    sort(recArray.begin(),recArray.end(),RecordComparator(bigQutil->order));
-    for (std::vector<Record *>::iterator it=recArray.begin(); it!=recArray.end(); ++it)
-        bigQutil->out->Insert((*it));
 
+    // Imlementing the external sorting mechanism.
+
+    // Read the data from Runs into the buffers.
+
+
+
+    //free(bigQutil);
+    tempfile.Close();
 }
+
+
 BigQ :: BigQ (Pipe &in, Pipe &out, OrderMaker &sortorder, int runlen) {
 	// read data from in pipe sort them into runlen pages
 

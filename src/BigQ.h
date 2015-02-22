@@ -25,7 +25,7 @@ struct  RecordComparator {
 
    bool operator() (Record* x, Record* y) {
      ComparisonEngine ceng;
-     return ceng.Compare(x,y,this->order) < 0 ? true : false;
+     return ceng.Compare(x,y,this->order) > 0 ? true : false;
    }
 };
 

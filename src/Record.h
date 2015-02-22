@@ -2,13 +2,13 @@
 #define RECORD_H
 
 #include <stdio.h>
+#include <string.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 
 #include "Defs.h"
 #include "ParseTree.h"
-#include "Record.h"
 #include "Schema.h"
 #include "File.h"
 #include "Comparison.h"
@@ -29,12 +29,16 @@ friend class Page;
 
 private:
 	char *bits;
-	char* GetBits ();
+    char* GetBits ();
 	void SetBits (char *bits);
 	void CopyBits(char *bits, int b_len);
 public:
 	Record ();
 	~Record();
+
+    size_t GetSize () { return *((int *) bits);}
+
+
 
 	// suck the contents of the record fromMe into this; note that after
 	// this call, fromMe will no longer have anything inside of it
