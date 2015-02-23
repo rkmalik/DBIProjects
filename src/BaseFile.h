@@ -41,6 +41,10 @@ public:
 	// implemented seprately by the derived classes.
 	virtual int Create (char* fpath, void* startup)=0;
 	virtual void Load (Schema &mySchema, char *loadMe)=0;
-
+	virtual off_t GetLength ()
+	{
+        return file.GetLength();
+	}
+	virtual void AddPage()=0;
 };
 #endif
