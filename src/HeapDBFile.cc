@@ -16,6 +16,8 @@ HeapDBFile::~HeapDBFile() {
 
 }
 
+
+
 void HeapDBFile::MoveFirst(){
 	// Setting the page to first record.
 	index = (off_t)0;
@@ -36,14 +38,23 @@ void HeapDBFile::Add (Record &addMe)
 {
 	// Keep on adding the record to the page and empty once it is full
 	//cout << "Page is added to the file" << endl;
-
+    //cout << "Outside " << file.GetLength () << endl;
 	if (page.Append (&addMe) ==0) {
 		//cout << "Page is full needs to be added to the file" << endl;
-		file.AddPage (&page, ++index);
-		totalPageCount++;
-		page.EmptyItOut ();
+		AddPage();
+		page.Append (&addMe);
 		//cout << "Page is added to the file" << endl;
 	}
+}
+
+
+void HeapDBFile::AddPage () {
+   // cout << "Before adding page File Length = " << file.GetLength () << endl;
+    file.AddPage (&page, ++index);
+    totalPageCount++;
+    page.EmptyItOut ();
+   // cout << "After adding page File Length = " << file.GetLength () << endl;
+
 }
 
 void HeapDBFile::Load (Schema &mySchema, char *loadMe)
