@@ -22,6 +22,7 @@ public:
 
 
 	void Add (Record& me);
+	void AddPage();
 	void MoveFirst();
 };
 #endif
