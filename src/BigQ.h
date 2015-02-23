@@ -35,14 +35,11 @@ class PairSorter {
 public :
     PairSorter(OrderMaker & sortorder):_sortorder(sortorder){}
 
-    bool operator () (pair <int, Record *> r1, pair <int, Record *> r2)
+    int operator () (pair <int, Record *> r1, pair <int, Record *> r2)
     {
         ComparisonEngine compengine;
 
-        if (compengine.Compare(r1.second, r2.second, &_sortorder) < 0)
-            return false;
-        else
-            return true;
+        return compengine.Compare(r1.second, r2.second, &_sortorder);
     }
 };
 
