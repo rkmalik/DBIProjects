@@ -6,9 +6,46 @@
 #include "File.h"
 #include "Record.h"
 #include "ComparisonEngine.h"
+#include <queue>
 
 
 using namespace std;
+
+class RecordSorter {
+
+    OrderMaker & _sortorder;
+
+public:
+    RecordSorter (OrderMaker & sortorder):_sortorder(sortorder) { }
+
+    bool operator () (Record * r1, Record * r2) {
+        ComparisonEngine compengine;
+
+        if (compengine.Compare(r1, r2, &_sortorder) < 0)
+            return true;
+        else
+            return false;
+    }
+};
+
+class PairSorter {
+
+    OrderMaker & _sortorder;
+
+public :
+    PairSorter(OrderMaker & sortorder):_sortorder(sortorder){}
+
+    bool operator () (pair <int, Record *> r1, pair <int, Record *> r2)
+    {
+        ComparisonEngine compengine;
+
+        if (compengine.Compare(r1.second, r2.second, &_sortorder) < 0)
+            return true;
+        else
+            return false;
+
+    }
+};
 
 typedef struct {
         Pipe *in;
