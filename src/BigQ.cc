@@ -17,11 +17,16 @@ void *tpmms(void* arg) {
 
     int runlength = bigQutil->runlen;
     int run_size= PAGE_SIZE * runlength;
+
+    // This holds the Page number of each run head
+    vector <int> runhead;
+    int pageNum = 0;
     //
     while(true) {
         vector<Record *> recArray;
         int totalsize = 0;
         int page_count =0;
+        runhead.push_back(pageNum);
         while(bigQutil->in->Remove(temp)) {
             //bigQutil->out->Insert(&temp);
             totalsize += temp->GetSize();
@@ -29,6 +34,7 @@ void *tpmms(void* arg) {
            // cout << totalsize << "   " <<  temp->GetSize () << endl;
             if(totalsize > PAGE_SIZE) {
                 page_count++;
+                pageNum ++;
                 totalsize = temp->GetSize();
             }
             if(page_count == runlength) {
@@ -55,8 +61,16 @@ void *tpmms(void* arg) {
 
     // Imlementing the external sorting mechanism.
 
-    // Read the data from Runs into the buffers.
+    /*
+        Read the data from the file and put the records in the Priority Queue
+        Based on the comparison criteria. Get the maximum item from priority queue.
+        and put that in the external pipe. At the same time put the data in teh saame run
+        from which data is just removed.
 
+        Run head is holding the top page number of each head.
+    */
+
+    priority_queue <pair<int, Record*>, vector <pair <int, Record*> >, PairSorter> sortq (PairSorter (*(bigQutil->order)));
 
 
     //free(bigQutil);
