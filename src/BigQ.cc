@@ -21,43 +21,50 @@ void *tpmms(void* arg) {
     // This holds the Page number of each run head
     vector <int> runhead;
     int pageNum = 0;
-    //
-    while(true) {
-        vector<Record *> recArray;
-        int totalsize = 0;
-        int page_count =0;
-        runhead.push_back(pageNum);
-        while(bigQutil->in->Remove(temp)) {
-            //bigQutil->out->Insert(&temp);
-            totalsize += temp->GetSize();
+    int totalsize =0;
+    vector<Record *> recArray;
+    runhead.push_back(pageNum);
+    int page_count =0;
 
-           // cout << totalsize << "   " <<  temp->GetSize () << endl;
-            if(totalsize > PAGE_SIZE) {
-                page_count++;
-                pageNum ++;
-                totalsize = temp->GetSize();
-            }
-            if(page_count == runlength) {
-                cout << "run completed" <<endl;
-                break;
-            }
-            else {
-                recArray.push_back(temp);
-                temp = new Record();
-            }
-        }
-        if(totalsize == 0) //no more records in input pipe
-            break;
-        sort(recArray.begin(),recArray.end(),RecordComparator(bigQutil->order));
+    while(bigQutil->in->Remove(temp)) {
+        //bigQutil->out->Insert(&temp);
+        totalsize += temp->GetSize();
 
-        for (std::vector<Record *>::iterator it=recArray.begin(); it!=recArray.end(); ++it) {
-            bigQutil->out->Insert((*it));
-            tempfile.Add(*(*it));
-            //vector <Record*> ::iterator ittem = recArray.erase(it);
-            //delete (*ittem);
+       // cout << totalsize << "   " <<  temp->GetSize () << endl;
+        if(totalsize > PAGE_SIZE) {
+            page_count++;
+            pageNum++;
+            totalsize = temp->GetSize();
         }
 
+        if(page_count == runlength) {
+            sort(recArray.begin(),recArray.end(),RecordComparator(bigQutil->order));
+
+            for (std::vector<Record *>::iterator it=recArray.begin(); it!=recArray.end(); ++it) {
+                tempfile.Add(*(*it));
+                //bigQutil->out->Insert((*it));
+            }
+            recArray.clear();
+            recArray.push_back(temp);
+            runhead.push_back(pageNum);
+            temp = new Record();
+            page_count =0;
+        }
+        else {
+            recArray.push_back(temp);
+            temp = new Record();
+        }
     }
+    //no more records in input pipe
+    sort(recArray.begin(),recArray.end(),RecordComparator(bigQutil->order));
+    for (std::vector<Record *>::iterator it=recArray.begin(); it!=recArray.end(); ++it) {
+        tempfile.Add(*(*it));
+        //bigQutil->out->Insert((*it));
+    }
+    recArray.clear();
+    runhead.push_back(pageNum);
+    tempfile.AddPage(); // last page is added explicitly
+
 
     // Imlementing the external sorting mechanism.
 
@@ -69,21 +76,25 @@ void *tpmms(void* arg) {
 
         Run head is holding the top page number of each head.
     */
-
+    cout << "filsize  "<<tempfile.GetLength() << "--"<<runhead.size()<<endl;
     priority_queue <pair<int, Record*>, vector <pair <int, Record*> >, PairSorter> sortq (PairSorter (*(bigQutil->order)));
     vector <int> runcheck (runhead);
     vector <Page *> runpagelist;
     // Now I will initialize the data in this priority queue.
-    for (int i = 0; i < runhead.size () -1; i++)
+    for (int i = 0; i < runhead.size ()-1; i++)
     {
+       // cout << "Reached Here 1" << "  Run Head " << runhead[i]+1 << endl;
         Page * mypage = new Page ();
         tempfile.GetPage(mypage, runhead[i]);
+       //     cout << "Reached Here 2" << endl;
         // Load the page from the file
         Record * myrec = new Record ();
         mypage->GetFirst(myrec);
         pair<int, Record *> * mypair = new pair<int, Record*>  (i, myrec);
         sortq.push (*mypair);
         runpagelist.push_back (mypage);
+
+        //cout << "Reached Here 1" << endl;
     }
 
     // Till now I have taken records from each run and put it into the priority queue.
@@ -99,17 +110,21 @@ void *tpmms(void* arg) {
 
 
         // Now take the record from the RunNumber +1; and place that in the priority queue
-        if(!runpagelist[runnum]->GetFirst(myrec)) {
+        if(!runpagelist[runnum]->GetFirst(myrec)) { // not checking if run is active
             // Check if the current Offset is less than the next run start offset then it is fine to take the new record
             if (++runcheck[runnum]< runhead[runnum+1]) {
 
                 Record * myrec = new Record ();
                 Page * mypage = new Page ();
-                tempfile.GetPage(mypage, runhead[runnum]);
+                tempfile.GetPage(mypage, runcheck[runnum]);
                 mypage->GetFirst(myrec);
                 pair<int, Record *> * mypair = new pair<int, Record*>  (runnum, myrec);
                 sortq.push (*mypair);
                 runpagelist[runnum] = mypage;
+            } else {
+
+                //cout << "I have sucked all the records from " << runnum << endl;
+
             }
 
         } else {
