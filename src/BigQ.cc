@@ -63,7 +63,7 @@ void *tpmms(void* arg) {
 
     /*
         Read the data from the file and put the records in the Priority Queue
-        Based on the comparison criteria. Get the maximum item from priority queue.
+        Based on the comparison criteria. Get the maximum item from priority qu5/eue.
         and put that in the external pipe. At the same time put the data in teh saame run
         from which data is just removed.
 
@@ -71,6 +71,61 @@ void *tpmms(void* arg) {
     */
 
     priority_queue <pair<int, Record*>, vector <pair <int, Record*> >, PairSorter> sortq (PairSorter (*(bigQutil->order)));
+    vector <int> runcheck (runhead);
+    vector <Page *> runpagelist;
+    // Now I will initialize the data in this priority queue.
+    for (int i = 0; i < runhead.size () -1; i++)
+    {
+        Page * mypage = new Page ();
+        tempfile.GetPage(mypage, runhead[i]);
+        // Load the page from the file
+        Record * myrec = new Record ();
+        mypage->GetFirst(myrec);
+        pair<int, Record *> * mypair = new pair<int, Record*>  (i, myrec);
+        sortq.push (*mypair);
+        runpagelist.push_back (mypage);
+    }
+
+    // Till now I have taken records from each run and put it into the priority queue.
+    // Now i need to pick the first record from the top and put that into the output pipe.
+
+    while (!sortq.empty ())
+    {
+        pair<int, Record*>  mypairtemp = (sortq.top ());
+        int runnum = mypairtemp.first;
+        Record * myrec = mypairtemp.second;
+        bigQutil->out->Insert(myrec);
+        sortq.pop ();
+
+
+        // Now take the record from the RunNumber +1; and place that in the priority queue
+        if(!runpagelist[runnum]->GetFirst(myrec)) {
+            // Check if the current Offset is less than the next run start offset then it is fine to take the new record
+            if (++runcheck[runnum]< runhead[runnum+1]) {
+
+                Record * myrec = new Record ();
+                Page * mypage = new Page ();
+                tempfile.GetPage(mypage, runhead[runnum]);
+                mypage->GetFirst(myrec);
+                pair<int, Record *> * mypair = new pair<int, Record*>  (runnum, myrec);
+                sortq.push (*mypair);
+                runpagelist[runnum] = mypage;
+            }
+
+        } else {
+            /*Record * myrec = new Record ();
+            Page * mypage = new Page ();
+            tempfile.GetPage(mypage, runhead[i]);
+            mypage.GetFirst(myrec);*/
+            pair<int, Record *> * mypair = new pair<int, Record*>  (runnum, myrec);
+            sortq.push (*mypair);
+        }
+
+    }
+
+    for(int i=0; i<runpagelist.size(); i++){
+		delete runpagelist[i];
+	}
 
 
     //free(bigQutil);

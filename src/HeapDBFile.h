@@ -19,6 +19,8 @@ public:
 	//int GetNext (Record &fetchMe, CNF &applyMe, Record &literal, Schema * p=NULL);
 	int GetNext (Record &fetchMe, CNF &applyMe, Record &literal);
 
+
+
 	void Add (Record& me);
 	void MoveFirst();
 };

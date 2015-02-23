@@ -37,6 +37,7 @@ public:
 	int GetNext (Record &fetchme);
 	// int GetNext (Record &fetchme, CNF &cnf, Record &, Schema * p=NULL);
 	int GetNext (Record &fetchme, CNF &cnf, Record &literal);
+	void GetPage (Page *putItHere, off_t whichPage);
 
 
 

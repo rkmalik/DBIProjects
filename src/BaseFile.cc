@@ -31,3 +31,9 @@ int BaseFile::Close ()
 	return 0;
 }
 
+void BaseFile::GetPage (Page *putItHere, off_t whichPage)
+{
+    file.GetPage(putItHere, whichPage);
+}
+
+

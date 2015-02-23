@@ -40,10 +40,9 @@ public :
         ComparisonEngine compengine;
 
         if (compengine.Compare(r1.second, r2.second, &_sortorder) < 0)
-            return true;
-        else
             return false;
-
+        else
+            return true;
     }
 };
 

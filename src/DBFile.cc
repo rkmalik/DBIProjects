@@ -22,7 +22,7 @@ DBFile::~DBFile () {
 
 int DBFile::Create (char *f_path, fType f_type, void *startup) {
 
-	switch (f_type)
+	switch (heap)
 	{
 		case heap:
 
@@ -85,6 +85,13 @@ void DBFile::Add (Record &rec) {
 int DBFile::GetNext (Record &fetchme) {
 	mydbfile->GetNext (fetchme);
 }
+
+
+
+void DBFile::GetPage (Page *putItHere, off_t whichPage)  {
+	mydbfile->GetPage (putItHere, whichPage);
+}
+
 
 int DBFile::GetNext (Record &fetchme, CNF &cnf, Record &literal) {
     return mydbfile->GetNext(fetchme, cnf, literal);

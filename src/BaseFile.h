@@ -31,6 +31,8 @@ public:
 	//virtual int GetNext (Record &fetchMe, CNF &applyMe, Record &literal, Schema * p = NULL)=0;
 	virtual int GetNext (Record &fetchMe, CNF &applyMe, Record &literal)=0;
 
+	virtual void GetPage (Page *putItHere, off_t whichPage);
+
 	virtual void Add (Record &addMe) = 0;
 	virtual void MoveFirst() = 0;
 
