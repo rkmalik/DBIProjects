@@ -79,9 +79,12 @@ int DBFile::Close () {
 
 void DBFile::Add (Record &rec) {
     // This method is implemented in HeapFile which is called from the mydbfile Pointer.
-
+    mydbfile->Add(rec);
 }
 
+void DBFile::AddPage() {
+    mydbfile->AddPage();
+}
 int DBFile::GetNext (Record &fetchme) {
 	mydbfile->GetNext (fetchme);
 }
