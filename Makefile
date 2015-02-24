@@ -23,7 +23,7 @@ test.out: 	Record.o \
 			Pipe.o\
 			BigQ.o\
 			HeapDBFile.o
-			$(CC) -o $(BIN)test.out \
+			$(CC) -o $(./)test.out \
 			$(BIN)Record.o \
 			$(BIN)Comparison.o \
 			$(BIN)ComparisonEngine.o \
@@ -38,11 +38,42 @@ test.out: 	Record.o \
 			$(BIN)BigQ.o\
 			$(BIN)HeapDBFile.o -lfl -lpthread
 
+
+test1.out: 	Record.o \
+			Comparison.o \
+			ComparisonEngine.o \
+			Schema.o \
+			File.o \
+			DBFile.o \
+			y.tab.o \
+			lex.yy.o \
+			test1.o \
+			BaseFile.o \
+			Pipe.o\
+			BigQ.o\
+			HeapDBFile.o
+			$(CC) -o $(./)test1.out \
+			$(BIN)Record.o \
+			$(BIN)Comparison.o \
+			$(BIN)ComparisonEngine.o \
+			$(BIN)Schema.o \
+			$(BIN)File.o \
+			$(BIN)DBFile.o \
+			$(BIN)y.tab.o \
+			$(BIN)lex.yy.o \
+			$(BIN)test1.o \
+			$(BIN)BaseFile.o \
+			$(BIN)Pipe.o\
+			$(BIN)BigQ.o\
+			$(BIN)HeapDBFile.o -lfl -lpthread
 #main: Record.o Comparison.o ComparisonEngine.o Schema.o File.o y.tab.o lex.yy.o main.o BaseFile.o DBFile.o HeapDBFile.o
 	##$(CC) -o main Record.o Comparison.o ComparisonEngine.o Schema.o File.o y.tab.o lex.yy.o main.o BaseFile.o DBFile.o  -lfl
 
 test.o: $(SRC)test.cc $(SRC)DBFile.cc
 	$(CC) -g -c $(SRC)test.cc -o $(BIN)test.o
+
+test1.o: $(SRC)test1.cc $(SRC)DBFile.cc
+	$(CC) -g -c $(SRC)test1.cc -o $(BIN)test1.o
 
 #main.o: main.cc DBFile.cc
 #	$(CC) -g -c main.cc
