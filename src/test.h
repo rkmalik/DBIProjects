@@ -13,9 +13,11 @@ using namespace std;
 
 // make sure that the information below is correct
 
-char *catalog_path = "/home/rkmalik/Desktop/DBI-Project1/Upload/source/catalog";
-char *tpch_dir ="/home/rkmalik/Desktop/DBI-Project1/Test/"; // dir where dbgen tpch files (extension *.tbl) can be found
-char *dbfile_dir = "/home/rkmalik/Desktop/DBI-Project1/Upload/bin/dbfiles/";
+char *catalog_path = "./src/catalog";
+//char *tpch_dir ="/home/rkmalik/Desktop/DBI-Project1/Test/";
+// dir where dbgen tpch files (extension *.tbl) can be found
+char *tpch_dir ="/cise/tmp/dbi_sp11/DATA/10M/";
+char *dbfile_dir = "./bin/dbfiles/";
 
 
 extern "C" {
