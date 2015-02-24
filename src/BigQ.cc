@@ -25,6 +25,7 @@ void *tpmms(void* arg) {
     vector<Record *> recArray;
     runhead.push_back(pageNum);
     int page_count =0;
+    int tempcounter = 0;
 
     while(bigQutil->in->Remove(temp)) {
         //bigQutil->out->Insert(&temp);
@@ -39,7 +40,7 @@ void *tpmms(void* arg) {
 
         if(page_count == runlength) {
             sort(recArray.begin(),recArray.end(),RecordComparator(bigQutil->order));
-
+            //cout << "Run " << tempcounter++ << " has " << recArray.size () << " Records." << endl;
             for (std::vector<Record *>::iterator it=recArray.begin(); it!=recArray.end(); ++it) {
                 tempfile.Add(*(*it));
                 //bigQutil->out->Insert((*it));
@@ -57,11 +58,13 @@ void *tpmms(void* arg) {
     }
     //no more records in input pipe
     sort(recArray.begin(),recArray.end(),RecordComparator(bigQutil->order));
+   // cout << "Run " << tempcounter++ << " has " << recArray.size () << " Records." << endl;
     for (std::vector<Record *>::iterator it=recArray.begin(); it!=recArray.end(); ++it) {
         tempfile.Add(*(*it));
         //bigQutil->out->Insert((*it));
     }
     recArray.clear();
+    pageNum++;
     runhead.push_back(pageNum);
     tempfile.AddPage(); // last page is added explicitly
 
@@ -76,26 +79,39 @@ void *tpmms(void* arg) {
 
         Run head is holding the top page number of each head.
     */
-    cout << "filsize  "<<tempfile.GetLength() << "--"<<runhead.size()<<endl;
+  //  cout << "filsize  "<<tempfile.GetLength() << "--"<<runhead.size()<<endl;
     priority_queue <pair<int, Record*>, vector <pair <int, Record*> >, PairSorter> sortq (PairSorter (*(bigQutil->order)));
     vector <int> runcheck (runhead);
     vector <Page *> runpagelist;
+
+
+    int arr [runhead.size ()];
+
+    //
     // Now I will initialize the data in this priority queue.
     for (int i = 0; i < runhead.size ()-1; i++)
     {
        // cout << "Reached Here 1" << "  Run Head " << runhead[i]+1 << endl;
+       arr[i] = 0;
         Page * mypage = new Page ();
         tempfile.GetPage(mypage, runhead[i]);
        //     cout << "Reached Here 2" << endl;
         // Load the page from the file
         Record * myrec = new Record ();
         mypage->GetFirst(myrec);
+        ++arr [i];
         pair<int, Record *> * mypair = new pair<int, Record*>  (i, myrec);
         sortq.push (*mypair);
         runpagelist.push_back (mypage);
 
         //cout << "Reached Here 1" << endl;
     }
+
+    int size = (sizeof (arr)/ sizeof (int));
+    /**for (int i = 0; i < size; i++)
+        cout << arr [i] << " ";
+
+        cout << endl << endl;**/
 
     // Till now I have taken records from each run and put it into the priority queue.
     // Now i need to pick the first record from the top and put that into the output pipe.
@@ -108,9 +124,13 @@ void *tpmms(void* arg) {
         bigQutil->out->Insert(myrec);
         sortq.pop ();
 
+        int ret = runpagelist[runnum]->GetFirst(myrec);
+
+        //if (ret )
+
 
         // Now take the record from the RunNumber +1; and place that in the priority queue
-        if(!runpagelist[runnum]->GetFirst(myrec)) { // not checking if run is active
+        if(!ret) {
             // Check if the current Offset is less than the next run start offset then it is fine to take the new record
             if (++runcheck[runnum]< runhead[runnum+1]) {
 
@@ -119,6 +139,7 @@ void *tpmms(void* arg) {
                 tempfile.GetPage(mypage, runcheck[runnum]);
                 mypage->GetFirst(myrec);
                 pair<int, Record *> * mypair = new pair<int, Record*>  (runnum, myrec);
+                ++arr [runnum];
                 sortq.push (*mypair);
                 runpagelist[runnum] = mypage;
             } else {
@@ -132,11 +153,18 @@ void *tpmms(void* arg) {
             Page * mypage = new Page ();
             tempfile.GetPage(mypage, runhead[i]);
             mypage.GetFirst(myrec);*/
+             ++arr [runnum];
             pair<int, Record *> * mypair = new pair<int, Record*>  (runnum, myrec);
             sortq.push (*mypair);
         }
 
     }
+
+
+    /**for (int i = 0; i < size; i++)
+        cout << arr [i] << " ";
+
+        cout << endl << endl;**/
 
     for(int i=0; i<runpagelist.size(); i++){
 		delete runpagelist[i];
