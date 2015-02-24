@@ -35,11 +35,15 @@ class PairSorter {
 public :
     PairSorter(OrderMaker & sortorder):_sortorder(sortorder){}
 
-    int operator () (pair <int, Record *> r1, pair <int, Record *> r2)
+    bool operator () (pair <int, Record *> r1, pair <int, Record *> r2)
     {
         ComparisonEngine compengine;
 
-        return compengine.Compare(r1.second, r2.second, &_sortorder);
+        if (compengine.Compare(r1.second, r2.second, &_sortorder) < 0)
+            return false;
+        else
+            return true;
+
     }
 };
 
@@ -58,7 +62,7 @@ struct  RecordComparator {
 
    bool operator() (Record* x, Record* y) {
      ComparisonEngine ceng;
-     return ceng.Compare(x,y,this->order) > 0 ? true : false;
+     return ceng.Compare(x,y,this->order) < 0 ? true : false;
    }
 };
 
