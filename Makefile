@@ -65,6 +65,7 @@ test1.out: 	Record.o \
 			$(BIN)BaseFile.o \
 			$(BIN)Pipe.o\
 			$(BIN)BigQ.o\
+			$(BIN)SortedDBFile.o\
 			$(BIN)HeapDBFile.o -lfl -lpthread
 #main: Record.o Comparison.o ComparisonEngine.o Schema.o File.o y.tab.o lex.yy.o main.o BaseFile.o DBFile.o HeapDBFile.o
 	##$(CC) -o main Record.o Comparison.o ComparisonEngine.o Schema.o File.o y.tab.o lex.yy.o main.o BaseFile.o DBFile.o  -lfl
@@ -108,6 +109,8 @@ BigQ.o: $(SRC)BigQ.cc
 HeapDBFile.o: $(SRC)HeapDBFile.cc $(SRC)BaseFile.cc
 	$(CC) -g -c $(SRC)HeapDBFile.cc -o $(BIN)HeapDBFile.o
 
+SortedDBFile.o: $(SRC)SortedDBFile.cc $(SRC)BaseFile.cc
+	$(CC) -g -c $(SRC)SortedDBFile.cc -o $(BIN)SortedDBFile.o
 
 y.tab.o: $(SRC)Parser.y
 	yacc -d $(SRC)Parser.y
