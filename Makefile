@@ -10,7 +10,7 @@ endif
 BIN = ./bin/
 SRC = ./src/
 
-test.out: 	Record.o \
+test2-2.out: 	Record.o \
 			Comparison.o \
 			ComparisonEngine.o \
 			Schema.o \
@@ -18,12 +18,13 @@ test.out: 	Record.o \
 			DBFile.o \
 			y.tab.o \
 			lex.yy.o \
-			test.o \
+			test2-2.o \
 			BaseFile.o \
 			Pipe.o\
+			SortedDBFile.o\
 			BigQ.o\
 			HeapDBFile.o
-			$(CC) -o $(./)test.out \
+			$(CC) -o $(./)test2-2.out \
 			$(BIN)Record.o \
 			$(BIN)Comparison.o \
 			$(BIN)ComparisonEngine.o \
@@ -32,9 +33,41 @@ test.out: 	Record.o \
 			$(BIN)DBFile.o \
 			$(BIN)y.tab.o \
 			$(BIN)lex.yy.o \
-			$(BIN)test.o \
+			$(BIN)test2-2.o \
 			$(BIN)BaseFile.o \
 			$(BIN)Pipe.o\
+			$(BIN)SortedDBFile.o\
+			$(BIN)BigQ.o\
+			$(BIN)HeapDBFile.o -lfl -lpthread
+
+
+test2-1.out: 	Record.o \
+			Comparison.o \
+			ComparisonEngine.o \
+			Schema.o \
+			File.o \
+			DBFile.o \
+			y.tab.o \
+			lex.yy.o \
+			test2-1.o \
+			BaseFile.o \
+			Pipe.o\
+			SortedDBFile.o\
+			BigQ.o\
+			HeapDBFile.o
+			$(CC) -o $(./)test2-1.out \
+			$(BIN)Record.o \
+			$(BIN)Comparison.o \
+			$(BIN)ComparisonEngine.o \
+			$(BIN)Schema.o \
+			$(BIN)File.o \
+			$(BIN)DBFile.o \
+			$(BIN)y.tab.o \
+			$(BIN)lex.yy.o \
+			$(BIN)test2-1.o \
+			$(BIN)BaseFile.o \
+			$(BIN)Pipe.o\
+			$(BIN)SortedDBFile.o\
 			$(BIN)BigQ.o\
 			$(BIN)HeapDBFile.o -lfl -lpthread
 
@@ -50,6 +83,7 @@ test1.out: 	Record.o \
 			test1.o \
 			BaseFile.o \
 			Pipe.o\
+			SortedDBFile.o\
 			BigQ.o\
 			HeapDBFile.o
 			$(CC) -o $(./)test1.out \
@@ -64,14 +98,17 @@ test1.out: 	Record.o \
 			$(BIN)test1.o \
 			$(BIN)BaseFile.o \
 			$(BIN)Pipe.o\
-			$(BIN)BigQ.o\
 			$(BIN)SortedDBFile.o\
+			$(BIN)BigQ.o\
 			$(BIN)HeapDBFile.o -lfl -lpthread
 #main: Record.o Comparison.o ComparisonEngine.o Schema.o File.o y.tab.o lex.yy.o main.o BaseFile.o DBFile.o HeapDBFile.o
 	##$(CC) -o main Record.o Comparison.o ComparisonEngine.o Schema.o File.o y.tab.o lex.yy.o main.o BaseFile.o DBFile.o  -lfl
 
-test.o: $(SRC)test.cc $(SRC)DBFile.cc
-	$(CC) -g -c $(SRC)test.cc -o $(BIN)test.o
+test2-2.o: $(SRC)test2-2.cc $(SRC)DBFile.cc
+	$(CC) -g -c $(SRC)test2-2.cc -o $(BIN)test2-2.o
+
+test2-1.o: $(SRC)test2-1.cc $(SRC)DBFile.cc
+	$(CC) -g -c $(SRC)test2-1.cc -o $(BIN)test2-1.o
 
 test1.o: $(SRC)test1.cc $(SRC)DBFile.cc
 	$(CC) -g -c $(SRC)test1.cc -o $(BIN)test1.o
@@ -130,6 +167,7 @@ clean:
 	rm -f $(BIN)y.tab.c
 	rm -f $(BIN)lex.yy.c
 	rm -f $(BIN)y.tab.h
+	rm -f ./*.out
 
 
 ###Google Test Integration#########
