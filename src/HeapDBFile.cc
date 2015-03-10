@@ -16,7 +16,18 @@ HeapDBFile::~HeapDBFile() {
 
 }
 
+int HeapDBFile::Open (char* fpath) {
+    cout << "Opening the file " << fpath << endl;
+    file.Open(1, fpath);
+    return 1;
+}
 
+int HeapDBFile::Close ()
+{
+    page.EmptyItOut ();
+    file.Close ();
+    return 0;
+}
 
 void HeapDBFile::MoveFirst(){
 	// Setting the page to first record.
@@ -51,7 +62,7 @@ void HeapDBFile::Add (Record &addMe)
 void HeapDBFile::AddPage () {
    // cout << "Before adding page File Length = " << file.GetLength () << endl;
     file.AddPage (&page, ++index);
-    totalPageCount++;
+    //totalPageCount++;
     page.EmptyItOut ();
    // cout << "After adding page File Length = " << file.GetLength () << endl;
 
@@ -74,15 +85,15 @@ void HeapDBFile::Load (Schema &mySchema, char *loadMe)
 	}
 
 	file.AddPage (&page, ++index);
-	totalPageCount++;
+	//totalPageCount++;
 
 	cout << "Total Records loaded to the File = " << rcount << endl \
-	<< " Current Page Index  = " << index << endl \
-	<< " Total Pages  = " << totalPageCount << endl;
+	<< " Current Page Index  = " << index << endl; \
+	//<< " Total Pages  = " << totalPageCount << endl;
 	rcount = 0;
 }
 
-int HeapDBFile::Create(char* fpath, void* startup) {
+int HeapDBFile::Create(char* fpath, fType file_type, void *startup) {
 	file.Open(0, fpath);
 	return 1;
 }
