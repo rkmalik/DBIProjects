@@ -1,0 +1,146 @@
+# depslib dependency file v1.0
+1423276799 source:/home/rkmalik/Desktop/DBI-Project1/Project1-A1Test1/DBI_Project1/source/main.cc
+	<iostream>
+	"Record.h"
+	<stdlib.h>
+
+1201018958 /home/rkmalik/Desktop/DBI-Project1/Project1-A1Test1/DBI_Project1/source/Record.h
+	<stdio.h>
+	<sys/types.h>
+	<sys/stat.h>
+	<fcntl.h>
+	"Defs.h"
+	"ParseTree.h"
+	"Record.h"
+	"Schema.h"
+	"File.h"
+	"Comparison.h"
+	"ComparisonEngine.h"
+
+1201018959 /home/rkmalik/Desktop/DBI-Project1/Project1-A1Test1/DBI_Project1/source/Defs.h
+
+1201018958 /home/rkmalik/Desktop/DBI-Project1/Project1-A1Test1/DBI_Project1/source/ParseTree.h
+
+1201018958 /home/rkmalik/Desktop/DBI-Project1/Project1-A1Test1/DBI_Project1/source/Schema.h
+	<stdio.h>
+	"Record.h"
+	"Schema.h"
+	"File.h"
+	"Comparison.h"
+	"ComparisonEngine.h"
+
+1201208611 /home/rkmalik/Desktop/DBI-Project1/Project1-A1Test1/DBI_Project1/source/File.h
+	"TwoWayList.h"
+	"Record.h"
+	"Schema.h"
+	"Comparison.h"
+	"ComparisonEngine.h"
+
+1201018959 /home/rkmalik/Desktop/DBI-Project1/Project1-A1Test1/DBI_Project1/source/TwoWayList.h
+
+1201018958 /home/rkmalik/Desktop/DBI-Project1/Project1-A1Test1/DBI_Project1/source/Comparison.h
+	"Record.h"
+	"Schema.h"
+	"File.h"
+	"Comparison.h"
+	"ComparisonEngine.h"
+
+1201018958 /home/rkmalik/Desktop/DBI-Project1/Project1-A1Test1/DBI_Project1/source/ComparisonEngine.h
+	"Record.h"
+	"Schema.h"
+	"File.h"
+	"Comparison.h"
+	"ComparisonEngine.h"
+
+1423273785 source:/home/rkmalik/Desktop/DBI-Project1/Project1-A1Test1/DBI_Project1/source/BaseFile.cc
+	<fstream>
+	<iostream>
+	"DBFile.h"
+	"HeapFile.h"
+	"BaseFile.h"
+
+1423190231 /home/rkmalik/Desktop/DBI-Project1/Project1-A1Test1/DBI_Project1/source/DBFile.h
+	"TwoWayList.h"
+	"Record.h"
+	"Schema.h"
+	"File.h"
+	"Comparison.h"
+	"ComparisonEngine.h"
+	"HeapFile.h"
+	"BaseFile.h"
+
+1423276226 /home/rkmalik/Desktop/DBI-Project1/Project1-A1Test1/DBI_Project1/source/HeapFile.h
+	"DBFile.h"
+	"BaseFile.h"
+
+1423276211 /home/rkmalik/Desktop/DBI-Project1/Project1-A1Test1/DBI_Project1/source/BaseFile.h
+	<string>
+	"Record.h"
+	"Schema.h"
+	"File.h"
+	"Comparison.h"
+	"ComparisonEngine.h"
+
+1294867283 source:/home/rkmalik/Desktop/DBI-Project1/Project1-A1Test1/DBI_Project1/source/Comparison.cc
+	<stdio.h>
+	<iostream>
+	<stdlib.h>
+	<string.h>
+	"Comparison.h"
+
+1422591867 source:/home/rkmalik/Desktop/DBI-Project1/Project1-A1Test1/DBI_Project1/source/ComparisonEngine.cc
+	"ComparisonEngine.h"
+	"Comparison.h"
+	<string.h>
+	<stdlib.h>
+	<iostream>
+
+1423270480 source:/home/rkmalik/Desktop/DBI-Project1/Project1-A1Test1/DBI_Project1/source/DBFile.cc
+	<iostream>
+	"TwoWayList.h"
+	"Record.h"
+	"Schema.h"
+	"File.h"
+	"Comparison.h"
+	"ComparisonEngine.h"
+	"DBFile.h"
+	"Defs.h"
+
+1423280397 source:/home/rkmalik/Desktop/DBI-Project1/Project1-A1Test1/DBI_Project1/source/File.cc
+	"File.h"
+	"TwoWayList.cc"
+	<sys/types.h>
+	<sys/stat.h>
+	<fcntl.h>
+	<string.h>
+	<iostream>
+	<stdlib.h>
+	<unistd.h>
+
+1423277386 /home/rkmalik/Desktop/DBI-Project1/Project1-A1Test1/DBI_Project1/source/TwoWayList.cc
+	"TwoWayList.h"
+	<iostream>
+	<stdlib.h>
+
+1423277362 source:/home/rkmalik/Desktop/DBI-Project1/Project1-A1Test1/DBI_Project1/source/HeapFile.cc
+	<iostream>
+	"Record.h"
+	"Schema.h"
+	"File.h"
+	"Comparison.h"
+	"ComparisonEngine.h"
+	"Defs.h"
+	"HeapFile.h"
+
+1423286131 source:/home/rkmalik/Desktop/DBI-Project1/Project1-A1Test1/DBI_Project1/source/test.cc
+	<iostream>
+	"DBFile.h"
+	"test.h"
+
+1294867527 /home/rkmalik/Desktop/DBI-Project1/Project1-A1Test1/DBI_Project1/source/test.h
+	<stdio.h>
+	<stdlib.h>
+	<iostream>
+	"DBFile.h"
+	"Record.h"
+
