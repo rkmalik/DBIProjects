@@ -9,6 +9,8 @@ endif
 
 BIN = ./bin/
 SRC = ./src/
+test.out: Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o BaseFile.o HeapDBFile.o SortedDBFile.o Pipe.o BigQ.o RelOp.o Function.o y.tab.o yyfunc.tab.o lex.yy.o lex.yyfunc.o test.o
+	$(CC) -o $(./)test.out $(BIN)Record.o $(BIN)Comparison.o $(BIN)ComparisonEngine.o $(BIN)Schema.o $(BIN)File.o $(BIN)DBFile.o $(BIN)BaseFile.o  $(BIN)HeapDBFile.o $(BIN)SortedDBFile.o $(BIN)Pipe.o $(BIN)BigQ.o $(BIN)RelOp.o $(BIN)Function.o $(BIN)y.tab.o $(BIN)yyfunc.tab.o $(BIN)lex.yy.o $(BIN)lex.yyfunc.o $(BIN)test.o -lfl -lpthread
 
 test2-2.out: 	Record.o \
 			Comparison.o \
@@ -113,6 +115,9 @@ test2-1.o: $(SRC)test2-1.cc $(SRC)DBFile.cc
 test1.o: $(SRC)test1.cc $(SRC)DBFile.cc
 	$(CC) -g -c $(SRC)test1.cc -o $(BIN)test1.o
 
+test.o: $(SRC)test.cc
+	$(CC) -g -c $(SRC)test.cc -o $(BIN)test.o
+
 #main.o: main.cc DBFile.cc
 #	$(CC) -g -c main.cc
 
@@ -143,6 +148,12 @@ Pipe.o: $(SRC)Pipe.cc
 BigQ.o: $(SRC)BigQ.cc
 	$(CC) -g -c $(SRC)BigQ.cc -o $(BIN)BigQ.o
 
+RelOp.o: $(SRC)RelOp.cc
+	$(CC) -g -c $(SRC)RelOp.cc -o $(BIN)RelOp.o
+
+Function.o: $(SRC)Function.cc
+	$(CC) -g -c $(SRC)Function.cc -o $(BIN)Function.o
+
 HeapDBFile.o: $(SRC)HeapDBFile.cc $(SRC)BaseFile.cc
 	$(CC) -g -c $(SRC)HeapDBFile.cc -o $(BIN)HeapDBFile.o
 
@@ -155,11 +166,24 @@ y.tab.o: $(SRC)Parser.y
 	mv y.tab.h $(SRC)y.tab.h
 	sed $(tag) $(SRC)y.tab.c -e "s/  __attribute__ ((__unused__))$$/# ifndef __cplusplus\n  __attribute__ ((__unused__));\n# endif/"
 	g++ -c $(SRC)y.tab.c -o $(BIN)y.tab.o
-
+		
+yyfunc.tab.o: $(SRC)ParserFunc.y
+	yacc -p "yyfunc" -b "yyfunc" -d $(SRC)ParserFunc.y
+	mv yyfunc.tab.c $(SRC)yyfunc.tab.c
+	mv yyfunc.tab.h $(SRC)yyfunc.tab.h
+	sed $(tag) $(SRC)yyfunc.tab.c -e "s/  __attribute__ ((__unused__))$$/# ifndef __cplusplus\n  __attribute__ ((__unused__));\n# endif/" 
+	g++ -c $(SRC)yyfunc.tab.c -o $(BIN)yyfunc.tab.o
+	
 lex.yy.o: $(SRC)Lexer.l
 	lex  $(SRC)Lexer.l
 	mv lex.yy.c $(SRC)lex.yy.c
 	gcc  -c $(SRC)lex.yy.c -o $(BIN)lex.yy.o
+
+lex.yyfunc.o: $(SRC)LexerFunc.l
+	lex -Pyyfunc $(SRC)LexerFunc.l
+	mv lex.yyfunc.c $(SRC)lex.yyfunc.c
+	gcc  -c $(SRC)lex.yyfunc.c -o $(BIN)lex.yyfunc.o
+	
 
 clean:
 	rm -f $(BIN)*.o
