@@ -1,14 +1,5 @@
 #include "RelOp.h"
 
-struct SelectMethodArgs {
-
-    DBFile &    inputfile;
-    Pipe &      outpipe;
-    CNF&        cnf;
-    Record &    lit;
-
-};
-
 void* SelectFromFileMethod (void * args)
 {
     SelectFile * selectfile = (SelectFile*) args;
@@ -48,13 +39,39 @@ void SelectFile::Use_n_Pages (int runlen) {
 }
 
 
+void* SelectFromPipeMethod (void * args)
+{
+    SelectPipe * selectpipe = (SelectPipe*) args;
+    selectpipe->PerformOperation();
+}
+
+void SelectPipe::PerformOperation ()
+{
+    Record outputrecord;
+    ComparisonEngine e;
+    while (inputPipe->Remove(&outputrecord)) {
+        if (e.Compare(&outputrecord, lit, cnf) == 1){
+            outputpipe->Insert(&outputrecord);
+        }
+    }
+    outputpipe->ShutDown();
+}
+
 void SelectPipe::Run (Pipe &inPipe, Pipe &outPipe, CNF &selOp, Record &literal)
 {
+    inputPipe = &inPipe;
+    outputpipe = &outPipe;
+    cnf = &selOp;
+    lit = &literal;
+    pthread_create(&thread,NULL,SelectFromPipeMethod,(void*)this);
 
 }
+
 void SelectPipe::WaitUntilDone () {
+    pthread_join(thread, NULL);
 
 }
-void SelectPipe::Use_n_Pages (int n) {
+
+void SelectPipe::Use_n_Pages (int runlen) {
 
 }

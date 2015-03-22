@@ -191,7 +191,7 @@ clean:
 	rm -f $(BIN)y.tab.c
 	rm -f $(BIN)lex.yy.c
 	rm -f $(BIN)y.tab.h
-	rm -f ./*.out
+	#rm -f ./*.out
 
 
 ###Google Test Integration#########
