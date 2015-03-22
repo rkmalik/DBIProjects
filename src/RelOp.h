@@ -32,7 +32,7 @@ class SelectFile : public RelationalOp {
 	void Run (DBFile &inFile, Pipe &outPipe, CNF &selOp, Record &literal);
 	void PerformOperation ();
 	void WaitUntilDone ();
-	void Use_n_Pages (int n);
+	void Use_n_Pages (int n) {}
 
 };
 
@@ -94,9 +94,14 @@ class GroupBy : public RelationalOp {
 	void Use_n_Pages (int n) { }
 };
 class WriteOut : public RelationalOp {
+	Pipe* inputPipe;
+	FILE* outputFile;
+	Schema* schema;
+	pthread_t thread;
 	public:
-	void Run (Pipe &inPipe, FILE *outFile, Schema &mySchema) { }
-	void WaitUntilDone () { }
-	void Use_n_Pages (int n) { }
+	void Run (Pipe &inPipe, FILE *outFile, Schema &mySchema);
+	void PerformOperation ();
+	void WaitUntilDone ();
+	void Use_n_Pages (int n) {}
 };
 #endif

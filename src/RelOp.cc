@@ -34,11 +34,6 @@ void SelectFile::WaitUntilDone () {
 	pthread_join (thread, NULL);
 }
 
-void SelectFile::Use_n_Pages (int runlen) {
-
-}
-
-
 void* SelectFromPipeMethod (void * args)
 {
     SelectPipe * selectpipe = (SelectPipe*) args;
@@ -95,6 +90,7 @@ void Project::PerformOperation ()
     inputPipe->ShutDown();
     outputPipe->ShutDown();
 }
+
 void Project::Run (Pipe &inPipe, Pipe &outPipe, int *keepMe, int numAttsInput, int numAttsOutput)
 {
     inputPipe = &inPipe;
@@ -115,4 +111,33 @@ void Project::Use_n_Pages (int n)
 {
 
 
+}
+
+void *writeOutMethod(void* args) {
+    WriteOut * writeout = (WriteOut*) args;
+    writeout->PerformOperation();
+}
+
+void WriteOut::Run (Pipe &inPipe, FILE *outFile, Schema &mySchema) {
+    inputPipe = &inPipe;
+    outputFile = outFile;
+    schema = &mySchema;
+    pthread_create(&thread,NULL,writeOutMethod,(void *)this);
+
+}
+
+void WriteOut::PerformOperation () {
+    Record* outputrecord = new Record;
+   //cout<<"perForm"<<endl;
+    while (inputPipe->Remove(outputrecord)) {
+     //   cout<<"hello";
+        outputrecord->Print(schema);
+        fputs(outputrecord->PrintRecord(schema), outputFile);
+        outputrecord = new Record;
+    }
+    inputPipe->ShutDown();
+}
+
+void WriteOut::WaitUntilDone () {
+     pthread_join (thread, NULL);
 }
