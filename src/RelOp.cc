@@ -12,10 +12,10 @@ void SelectFile::PerformOperation ()
 
     while (inputfile->GetNext(outputrecord, *cnf, *lit)) {
 
-        cout << "Setting up record in output pipe";
+        //cout << "Setting up record in output pipe";
         outputpipe->Insert(&outputrecord);
     }
-    cout << "Shutting down the pipe" << endl;
+    //cout << "Shutting down the pipe" << endl;
     outputpipe->ShutDown();
 }
 void SelectFile::Run (DBFile &inFile, Pipe &outPipe, CNF &selOp, Record &literal) {
@@ -73,5 +73,46 @@ void SelectPipe::WaitUntilDone () {
 }
 
 void SelectPipe::Use_n_Pages (int runlen) {
+
+}
+
+
+void * DisplayInOrderOp (void * args)
+{
+    Project * project = (Project*) args;
+    project->PerformOperation();
+}
+
+void Project::PerformOperation ()
+{
+    Record* outputrecord = new Record;
+    while (inputPipe->Remove(outputrecord)) {
+        //cout << outputrecord<< endl;
+        outputrecord->Project(keep, numAttsoutputs, numAttsInputs);
+        outputPipe->Insert(outputrecord);
+        outputrecord = new Record;
+    }
+    inputPipe->ShutDown();
+    outputPipe->ShutDown();
+}
+void Project::Run (Pipe &inPipe, Pipe &outPipe, int *keepMe, int numAttsInput, int numAttsOutput)
+{
+    inputPipe = &inPipe;
+    outputPipe = &outPipe;
+    keep = keepMe;
+    numAttsInputs = numAttsInput;
+    numAttsoutputs = numAttsOutput;
+  //  cout << "Calling Project" << endl;
+    pthread_create(&thread,NULL,DisplayInOrderOp,(void*)this);
+
+}
+void Project::WaitUntilDone ()
+{
+    pthread_join (thread, NULL);
+
+}
+void Project::Use_n_Pages (int n)
+{
+
 
 }

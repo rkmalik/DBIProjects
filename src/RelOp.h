@@ -54,10 +54,20 @@ class SelectPipe : public RelationalOp {
 };
 
 class Project : public RelationalOp {
+	pthread_t thread;
+	// Record *buffer;
+
+    Pipe*       inputPipe;
+    Pipe*       outputPipe;
+    int*        keep;
+    int         numAttsInputs;
+    int         numAttsoutputs;
+
 	public:
-	void Run (Pipe &inPipe, Pipe &outPipe, int *keepMe, int numAttsInput, int numAttsOutput) { }
-	void WaitUntilDone () { }
-	void Use_n_Pages (int n) { }
+	void Run (Pipe &inPipe, Pipe &outPipe, int *keepMe, int numAttsInput, int numAttsOutput);
+    void PerformOperation ();
+	void WaitUntilDone ();
+	void Use_n_Pages (int n);
 };
 class Join : public RelationalOp {
 	public:
