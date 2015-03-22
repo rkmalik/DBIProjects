@@ -8,7 +8,7 @@
 
 class RelationalOp {
 	public:
-	// blocks the caller until the particular relational operator 
+	// blocks the caller until the particular relational operator
 	// has run to completion
 	virtual void WaitUntilDone () = 0;
 
@@ -16,15 +16,21 @@ class RelationalOp {
 	virtual void Use_n_Pages (int n) = 0;
 };
 
-class SelectFile : public RelationalOp { 
+class SelectFile : public RelationalOp {
 
 	private:
-	// pthread_t thread;
+	pthread_t thread;
 	// Record *buffer;
+
+    DBFile*    inputfile;
+    Pipe*     outputpipe;
+    CNF*       cnf;
+    Record*   lit;
 
 	public:
 
 	void Run (DBFile &inFile, Pipe &outPipe, CNF &selOp, Record &literal);
+	void PerformOperation ();
 	void WaitUntilDone ();
 	void Use_n_Pages (int n);
 
@@ -32,17 +38,17 @@ class SelectFile : public RelationalOp {
 
 class SelectPipe : public RelationalOp {
 	public:
-	void Run (Pipe &inPipe, Pipe &outPipe, CNF &selOp, Record &literal) { }
-	void WaitUntilDone () { }
-	void Use_n_Pages (int n) { }
+	void Run (Pipe &inPipe, Pipe &outPipe, CNF &selOp, Record &literal);
+	void WaitUntilDone ();
+	void Use_n_Pages (int n);
 };
-class Project : public RelationalOp { 
+class Project : public RelationalOp {
 	public:
 	void Run (Pipe &inPipe, Pipe &outPipe, int *keepMe, int numAttsInput, int numAttsOutput) { }
 	void WaitUntilDone () { }
 	void Use_n_Pages (int n) { }
 };
-class Join : public RelationalOp { 
+class Join : public RelationalOp {
 	public:
 	void Run (Pipe &inPipeL, Pipe &inPipeR, Pipe &outPipe, CNF &selOp, Record &literal) { }
 	void WaitUntilDone () { }

@@ -69,12 +69,29 @@ to test your code:
 	2. sort + display
 	3. sort + write
 
-Note that the driver works only with heap dbfiles created over tpch tables.
-Before using the driver, make sure you have generated the necessary heap dbfiles
+
+To compile the driver, type
+	make test2-1.out
+
+To run the driver, type
+	./test2-1.out
+
+
+readme
+===============
+Test driver for Assignment 2 BigQ Milestone 2
+
+This test driver gives a menu-based interface to three options that allows you
+to test your code:
 
 
 To compile the driver, type
-	make test.out
+	make test2-2.out
 
 To run the driver, type
-	./test.out
+	./test2-2.out
+
+ select test option:
+ 	 1. create sorted dbfile
+ 	 2. scan a dbfile
+ 	 3. run some query

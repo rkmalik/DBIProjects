@@ -1,15 +1,46 @@
 #include "RelOp.h"
 
+struct SelectMethodArgs {
 
-/***************Implementation for Select File **************/
+    DBFile &    inputfile;
+    Pipe &      outpipe;
+    CNF&        cnf;
+    Record &    lit;
 
-void SelectFile::Run (DBFile &inFile, Pipe &outPipe, CNF &selOp, Record &literal) {
+};
 
-
+void* SelectFromFileMethod (void * args)
+{
+    SelectFile * selectfile = (SelectFile*) args;
+    selectfile->PerformOperation();
 }
 
+void SelectFile::PerformOperation ()
+{
+    Record outputrecord;
+
+    while (inputfile->GetNext(outputrecord, *cnf, *lit)) {
+
+        cout << "Setting up record in output pipe";
+        outputpipe->Insert(&outputrecord);
+    }
+    cout << "Shutting down the pipe" << endl;
+    outputpipe->ShutDown();
+}
+void SelectFile::Run (DBFile &inFile, Pipe &outPipe, CNF &selOp, Record &literal) {
+
+    /*struct SelectMethodArgs myarg = {inFile, outPipe, selOp, literal};*/
+    inputfile = &inFile;
+    outputpipe = &outPipe;
+    cnf = &selOp;
+    lit = &literal;
+    pthread_create(&thread,NULL,SelectFromFileMethod,(void*)this);
+}
+
+
+
 void SelectFile::WaitUntilDone () {
-	// pthread_join (thread, NULL);
+	pthread_join (thread, NULL);
 }
 
 void SelectFile::Use_n_Pages (int runlen) {
@@ -17,116 +48,13 @@ void SelectFile::Use_n_Pages (int runlen) {
 }
 
 
-/***************Implementation for Select Pipe**************/
-
-void SelectPipe::Run (DBFile &inFile, Pipe &outPipe, CNF &selOp, Record &literal) {
-
+void SelectPipe::Run (Pipe &inPipe, Pipe &outPipe, CNF &selOp, Record &literal)
+{
 
 }
-
 void SelectPipe::WaitUntilDone () {
-	// pthread_join (thread, NULL);
-}
-
-void SelectPipe::Use_n_Pages (int runlen) {
 
 }
-
-
-/***************Implementation for Project **************/
-
-void Project::Run (DBFile &inFile, Pipe &outPipe, CNF &selOp, Record &literal) {
-
-
-}
-
-void Project::WaitUntilDone () {
-	// pthread_join (thread, NULL);
-}
-
-void Project::Use_n_Pages (int runlen) {
-
-}
-
-
-
-/***************Implementation for Join **************/
-
-void Join::Run (DBFile &inFile, Pipe &outPipe, CNF &selOp, Record &literal) {
-
-
-}
-
-void Join::WaitUntilDone () {
-	// pthread_join (thread, NULL);
-}
-
-void Join::Use_n_Pages (int runlen) {
-
-}
-
-
-/***************Implementation for DuplicateRemoval **************/
-
-void DuplicateRemoval::Run (DBFile &inFile, Pipe &outPipe, CNF &selOp, Record &literal) {
-
-
-}
-
-void DuplicateRemoval::WaitUntilDone () {
-	// pthread_join (thread, NULL);
-}
-
-void DuplicateRemoval::Use_n_Pages (int runlen) {
-
-}
-
-
-/***************Implementation for Sum **************/
-
-void Sum::Run (DBFile &inFile, Pipe &outPipe, CNF &selOp, Record &literal) {
-
-
-}
-
-void Sum::WaitUntilDone () {
-	// pthread_join (thread, NULL);
-}
-
-void Sum::Use_n_Pages (int runlen) {
-
-}
-
-
-/***************Implementation for GroupBy**************/
-
-void GroupBy::Run (DBFile &inFile, Pipe &outPipe, CNF &selOp, Record &literal) {
-
-
-}
-
-void GroupBy::WaitUntilDone () {
-	// pthread_join (thread, NULL);
-}
-
-void GroupBy::Use_n_Pages (int runlen) {
-
-}
-
-
-
-
-/***************Implementation for WriteOut**************/
-
-void WriteOut::Run (DBFile &inFile, Pipe &outPipe, CNF &selOp, Record &literal) {
-
-
-}
-
-void WriteOut::WaitUntilDone () {
-	// pthread_join (thread, NULL);
-}
-
-void WriteOut::Use_n_Pages (int runlen) {
+void SelectPipe::Use_n_Pages (int n) {
 
 }
