@@ -50,7 +50,7 @@ class SelectPipe : public RelationalOp {
 	void PerformOperation ();
 	void Run (Pipe &inPipe, Pipe &outPipe, CNF &selOp, Record &literal);
 	void WaitUntilDone ();
-	void Use_n_Pages (int n);
+	void Use_n_Pages (int n){}
 };
 
 class Project : public RelationalOp {
@@ -67,7 +67,7 @@ class Project : public RelationalOp {
 	void Run (Pipe &inPipe, Pipe &outPipe, int *keepMe, int numAttsInput, int numAttsOutput);
     void PerformOperation ();
 	void WaitUntilDone ();
-	void Use_n_Pages (int n);
+	void Use_n_Pages (int n){}
 };
 class Join : public RelationalOp {
 
@@ -85,10 +85,17 @@ class Join : public RelationalOp {
 	void Use_n_Pages (int n);
 };
 class DuplicateRemoval : public RelationalOp {
+	Pipe*       inputPipe;
+    Pipe*       outPutPipe;
+    Schema*   schema;
+    int runlen;
+	pthread_t thread;
+
 	public:
-	void Run (Pipe &inPipe, Pipe &outPipe, Schema &mySchema) { }
-	void WaitUntilDone () { }
-	void Use_n_Pages (int n) { }
+	void Run (Pipe &inPipe, Pipe &outPipe, Schema &mySchema) ;
+	void WaitUntilDone ();
+	void PerformOperation ();
+	void Use_n_Pages (int n){}
 };
 class Sum : public RelationalOp {
 

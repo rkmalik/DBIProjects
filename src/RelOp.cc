@@ -9,12 +9,14 @@ void* SelectFromFileMethod (void * args)
 void SelectFile::PerformOperation ()
 {
     Record outputrecord;
-
+    int i=0;
     while (inputfile->GetNext(outputrecord, *cnf, *lit)) {
 
         //cout << "Setting up record in output pipe";
+        i++;
         outputpipe->Insert(&outputrecord);
     }
+   // cout<<"scanned" << i << " records";
     //cout << "Shutting down the pipe" << endl;
     outputpipe->ShutDown();
 }
@@ -67,11 +69,6 @@ void SelectPipe::WaitUntilDone () {
 
 }
 
-void SelectPipe::Use_n_Pages (int runlen) {
-
-}
-
-
 void * DisplayInOrderOp (void * args)
 {
     Project * project = (Project*) args;
@@ -105,12 +102,60 @@ void Project::Run (Pipe &inPipe, Pipe &outPipe, int *keepMe, int numAttsInput, i
 void Project::WaitUntilDone ()
 {
     pthread_join (thread, NULL);
+}
+
+void * duplicateRemovalMethod(void* args) {
+    DuplicateRemoval * duplicateremoval = (DuplicateRemoval*) args;
+    duplicateremoval->PerformOperation();
+}
+
+void DuplicateRemoval::Run (Pipe &inPipe, Pipe &outPipe, Schema &mySchema) {
+    inputPipe = &inPipe;
+    outPutPipe = &outPipe;
+    schema = &mySchema;
+    pthread_create(&thread,NULL,duplicateRemovalMethod,(void *)this);
 
 }
-void Project::Use_n_Pages (int n)
-{
+
+void DuplicateRemoval::WaitUntilDone () {
+    pthread_join (thread, NULL);
+}
 
 
+void DuplicateRemoval::PerformOperation () {
+
+    int  bufSize = 100;
+    OrderMaker* ordermaker = new OrderMaker(schema);
+    Pipe* intermediatepipe  = new Pipe (bufSize);
+    runlen = 20;
+    BigQ* bq = new BigQ (*inputPipe, *intermediatepipe, *ordermaker, runlen);
+
+	Record* outputrecord = new Record;
+	Record prev;
+	int i=0;
+    if(intermediatepipe->Remove(outputrecord)) {
+        prev.Copy(outputrecord);
+        outPutPipe->Insert(outputrecord);
+        delete outputrecord;
+		outputrecord = new Record;
+		i++;
+	}
+	ComparisonEngine ceng;
+
+	while (intermediatepipe->Remove (outputrecord)) {
+        if (ceng.Compare (&prev, outputrecord, ordermaker) != 0) {
+                prev.Copy(outputrecord);
+                outPutPipe->Insert(outputrecord);
+                i++;
+        }
+
+		delete outputrecord;
+		outputrecord = new Record;
+	}
+   // cout<<"unique" << i<<endl;
+    inputPipe->ShutDown();
+    intermediatepipe->ShutDown();
+    outPutPipe->ShutDown();
 }
 
 void *writeOutMethod(void* args) {
@@ -123,18 +168,20 @@ void WriteOut::Run (Pipe &inPipe, FILE *outFile, Schema &mySchema) {
     outputFile = outFile;
     schema = &mySchema;
     pthread_create(&thread,NULL,writeOutMethod,(void *)this);
-
 }
 
 void WriteOut::PerformOperation () {
     Record* outputrecord = new Record;
    //cout<<"perForm"<<endl;
+    int i=0;
     while (inputPipe->Remove(outputrecord)) {
      //   cout<<"hello";
-        outputrecord->Print(schema);
+        //outputrecord->Print(schema);
+        i++;
         fputs(outputrecord->PrintRecord(schema), outputFile);
         outputrecord = new Record;
     }
+  //  cout<<"records written" << i<<endl;
     inputPipe->ShutDown();
 }
 
@@ -196,6 +243,7 @@ void Sum::WaitUntilDone ()
 {
     pthread_join (thread, NULL);
 }
+
 void *GroupByMethod(void* args)
 {
     GroupBy * groupByObj = (GroupBy*) args;
