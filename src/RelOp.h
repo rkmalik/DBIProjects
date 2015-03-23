@@ -104,10 +104,19 @@ class Sum : public RelationalOp {
 	void Use_n_Pages (int n) {}
 };
 class GroupBy : public RelationalOp {
+
+    Pipe*       inputPipe;
+    Pipe*       outPutPipe;
+    Function*   compute;
+	pthread_t thread;
+    OrderMaker* groupAttrs;
+    int         runLen;
+
 	public:
-	void Run (Pipe &inPipe, Pipe &outPipe, OrderMaker &groupAtts, Function &computeMe) { }
-	void WaitUntilDone () { }
-	void Use_n_Pages (int n) { }
+	void Run (Pipe &inPipe, Pipe &outPipe, OrderMaker &groupAtts, Function &computeMe);
+	void WaitUntilDone ();
+    void PerformOperation ();
+	void Use_n_Pages (int n) { runLen = n;}
 };
 class WriteOut : public RelationalOp {
 	Pipe* inputPipe;

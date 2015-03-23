@@ -196,6 +196,118 @@ void Sum::WaitUntilDone ()
 {
     pthread_join (thread, NULL);
 }
+void *GroupByMethod(void* args)
+{
+    GroupBy * groupByObj = (GroupBy*) args;
+
+    groupByObj->PerformOperation();
+}
+
+void GroupBy::PerformOperation ()
+{
+    // I will create a BigQ to read the data from the input pipe and sort this
+    // based on the order Marker
+    int                 bufSize = 100;
+    Type                recType;
+    ComparisonEngine    ceng;
+    int                 intResult;
+    int                 intAttVal;
+    double              doubleResult;
+    double              doubleAttVal;
+    int                 attCount = groupAttrs->numAtts;
+    int                 attKeep [groupAttrs->numAtts+1];
+    Record*             tempRecord1 = new Record ();
+    Record*             temp2;
+    Record*             temp3;
+    Record              rec[2];
+    //int                 recSwitch = 0;
+    bool                recSwitch = false;
+
+    Pipe* intermediatepipe  = new Pipe (bufSize);
+    BigQ* bq                = new BigQ (*inputPipe, *intermediatepipe, *groupAttrs, runLen);
+
+    for (int i = 0; i <= attCount; i++) {
+        attKeep [i] = groupAttrs->whichAtts[i-1];
+    }
+
+
+    if (compute->returnsInt) {
+        recType = Int;
+    } else {
+        recType = Double;
+    }
+
+    Record *sumRecord = new Record;
+    Record *recLeft = new Record;
+    Record *recRight = new Record;
+    int inserted = 0;
+
+    // Loop till all the records from intermediate pipe are consumed
+    while (intermediatepipe->Remove(&rec [(int)recSwitch])){
+        temp3 = temp2;
+        temp2 = &rec [(int)recSwitch];
+
+        if (temp3 && temp2) {
+            if (ceng.Compare (temp3, temp2, groupAttrs) !=0 ) {
+                compute->Apply(*temp3,intAttVal,doubleAttVal);
+
+                if (compute->returnsInt) {
+                    intResult = intResult + intAttVal;
+                } else {
+                    doubleResult = doubleResult + doubleAttVal;
+                }
+
+                recLeft->CreateRecord(recType,intResult,doubleResult);
+                sumRecord->MergeRecords(recLeft,temp3,1 ,((int *) temp3->bits)[1] / sizeof(int) -1, attKeep, (groupAttrs->numAtts)+1,1);
+                outPutPipe->Insert(sumRecord);
+                intResult = 0;
+                doubleResult = 0;
+                inserted++;
+            } else {
+
+                compute->Apply(*temp3,intAttVal,doubleAttVal);
+
+                if (compute->returnsInt) {
+                    intResult = intResult + intAttVal;
+                } else {
+                    doubleResult = doubleResult + doubleAttVal;
+                }
+            }
+        }
+        recSwitch = !recSwitch;
+    }
+
+    compute->Apply(*temp3,intAttVal,doubleAttVal);
+
+    if (compute->returnsInt) {
+        intResult = intResult + intAttVal;
+    } else {
+        doubleResult = doubleResult + doubleAttVal;
+    }
+
+    recLeft->CreateRecord(recType,intResult,doubleResult);
+    sumRecord->MergeRecords(recLeft,temp3,1 ,((int *) temp3->bits)[1] / sizeof(int) -1, attKeep, (groupAttrs->numAtts)+1,1);
+    outPutPipe->Insert(sumRecord);
+    inserted++;
+    intermediatepipe->ShutDown();
+    inputPipe->ShutDown();
+    outPutPipe->ShutDown();
+}
+
+void GroupBy::Run (Pipe &inPipe, Pipe &outPipe, OrderMaker &groupAtts, Function &computeMe)
+{
+    inputPipe = &inPipe;
+    outPutPipe = &outPipe;
+    compute = &computeMe;
+    groupAttrs = &groupAtts;
+    pthread_create(&thread,NULL,GroupByMethod,(void *)this);
+}
+
+
+void GroupBy::WaitUntilDone ()
+{
+    pthread_join (thread, NULL);
+}
 
 void Join::Run (Pipe &inPipeL, Pipe &inPipeR, Pipe &outPipe, CNF &selOp, Record &literal)
 {
