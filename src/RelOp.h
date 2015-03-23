@@ -70,10 +70,19 @@ class Project : public RelationalOp {
 	void Use_n_Pages (int n);
 };
 class Join : public RelationalOp {
+
+
+    Pipe*       inPipeLeft;
+    Pipe*       inPipeRight;
+    Pipe*       outPutPipe;
+    CNF*        cnf;
+    Record*     lit;
+
 	public:
-	void Run (Pipe &inPipeL, Pipe &inPipeR, Pipe &outPipe, CNF &selOp, Record &literal) { }
-	void WaitUntilDone () { }
-	void Use_n_Pages (int n) { }
+	void Run (Pipe &inPipeL, Pipe &inPipeR, Pipe &outPipe, CNF &selOp, Record &literal);
+	void WaitUntilDone ();
+    void PerformOperation ();
+	void Use_n_Pages (int n);
 };
 class DuplicateRemoval : public RelationalOp {
 	public:
@@ -82,10 +91,17 @@ class DuplicateRemoval : public RelationalOp {
 	void Use_n_Pages (int n) { }
 };
 class Sum : public RelationalOp {
+
+    Pipe*       inputPipe;
+    Pipe*       outPutPipe;
+    Function*   compute;
+	pthread_t thread;
+
 	public:
-	void Run (Pipe &inPipe, Pipe &outPipe, Function &computeMe) { }
-	void WaitUntilDone () { }
-	void Use_n_Pages (int n) { }
+	void Run (Pipe &inPipe, Pipe &outPipe, Function &computeMe);
+	void WaitUntilDone ();
+    void PerformOperation ();
+	void Use_n_Pages (int n) {}
 };
 class GroupBy : public RelationalOp {
 	public:

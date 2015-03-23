@@ -73,7 +73,7 @@ public:
 
 	const char * PrintRecord (Schema *mySchema);
 
-
+    int CreateRecord (Type type,int intSum,double doubleSum);
 };
 
 #endif

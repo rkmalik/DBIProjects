@@ -6,7 +6,7 @@
 #define MAX_DEPTH 100
 
 
-enum ArithOp {PushInt, PushDouble, ToDouble, ToDouble2Down, 
+enum ArithOp {PushInt, PushDouble, ToDouble, ToDouble2Down,
 	IntUnaryMinus, IntMinus, IntPlus, IntDivide, IntMultiply,
 	DblUnaryMinus, DblMinus, DblPlus, DblDivide, DblMultiply};
 
@@ -14,7 +14,7 @@ struct Arithmatic {
 
 	ArithOp myOp;
 	int recInput;
-	void *litInput;	
+	void *litInput;
 };
 
 class Function {
@@ -24,10 +24,9 @@ private:
 	Arithmatic *opList;
 	int numOps;
 
-	int returnsInt;
 
 public:
-
+	int returnsInt;
 	Function ();
 
 	// this grows the specified function from a parse tree and converts

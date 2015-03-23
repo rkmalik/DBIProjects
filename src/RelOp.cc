@@ -141,3 +141,78 @@ void WriteOut::PerformOperation () {
 void WriteOut::WaitUntilDone () {
      pthread_join (thread, NULL);
 }
+
+void *SumMethod(void* args)
+{
+    Sum * sumobj = (Sum*) args;
+    cout << "Sum"<< endl;
+    sumobj->PerformOperation();
+}
+
+
+void Sum::PerformOperation ()
+{
+    Record* outputrecord = new Record ();
+    Record* buffer = new Record ();
+    double doublesum = 0;
+    int     intsum =0;
+    double  doubleresult =0;
+    int     intresult =0;
+    Type    rectype = compute->returnsInt? Int : Double;
+
+    while (inputPipe->Remove(outputrecord)) {
+
+        doubleresult =0;
+        intresult =0;
+
+        compute->Apply(*outputrecord, intresult, doubleresult);
+
+        if (compute->returnsInt) {
+            intsum = intsum + intresult;
+        } else {
+            doublesum = doublesum + doubleresult;
+        }
+    }
+
+
+    //delete outputrecord;
+    buffer->CreateRecord (rectype, intsum, doublesum);
+    outPutPipe->Insert(buffer);
+    // Create a new record and put in the output pipe
+    inputPipe->ShutDown();
+    outPutPipe->ShutDown();
+}
+
+void Sum::Run (Pipe &inPipe, Pipe &outPipe, Function &computeMe)
+{
+    inputPipe = &inPipe;
+    outPutPipe = &outPipe;
+    compute = &computeMe;
+        cout << "Sum"<< endl;
+    pthread_create(&thread,NULL,SumMethod,(void *)this);
+}
+
+void Sum::WaitUntilDone ()
+{
+    pthread_join (thread, NULL);
+}
+
+void Join::Run (Pipe &inPipeL, Pipe &inPipeR, Pipe &outPipe, CNF &selOp, Record &literal)
+{
+    inPipeLeft = &inPipeL;
+    inPipeRight = &inPipeR;
+    outPutPipe = &outPipe;
+    cnf = &selOp;
+    lit  = &literal;
+}
+
+void Join::WaitUntilDone ()
+{
+
+}
+
+void Join::Use_n_Pages (int n)
+{
+
+
+}

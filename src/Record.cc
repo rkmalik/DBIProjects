@@ -521,4 +521,46 @@ const char* Record :: PrintRecord (Schema *mySchema) {
 	return temp.c_str();
 }
 
+int Record :: CreateRecord (Type type,int intSum,double doubleSum) {
 
+    char *recSpace = new (std::nothrow) char[PAGE_SIZE];
+    if (recSpace== NULL)
+    {
+        cout << "ERROR : Not enough memory. EXIT !!!\n";
+        exit(1);
+    }
+
+    if (bits != NULL) {
+        delete [] bits;
+    }
+    bits = NULL;
+
+    int currentPosInRec = sizeof (int) * (2);
+
+    ((int *) recSpace)[1] = currentPosInRec;
+
+    if (type == Int) {
+        *((int *) &(recSpace[currentPosInRec])) = intSum;
+        currentPosInRec += sizeof (int);
+    } else {
+        while (currentPosInRec % sizeof(double) != 0) {
+            currentPosInRec += sizeof (int);
+            ((int *) recSpace)[1] = currentPosInRec;
+        }
+        *((double *) &(recSpace[currentPosInRec])) = doubleSum;
+        currentPosInRec += sizeof (double);
+    }
+
+    ((int *) recSpace)[0] = currentPosInRec;
+
+    bits = new (std::nothrow) char[currentPosInRec];
+    if (bits == NULL)
+    {
+        cout << "ERROR : Not enough memory. EXIT !!!\n";
+        exit(1);
+    }
+
+    memcpy (bits, recSpace, currentPosInRec);
+    delete [] recSpace;
+    return 1;
+}
