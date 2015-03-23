@@ -285,7 +285,10 @@ void q6 () {
 			char *str_sum = "(ps_supplycost)";
 			get_cnf (str_sum, &join_sch, func);
 			func.Print ();
-			OrderMaker grp_order (&join_sch);
+			OrderMaker grp_order;
+			grp_order.numAtts=1;
+			grp_order.whichAtts[0]=3;
+            grp_order.whichTypes[0]=Int;
 	G.Use_n_Pages (1);
 
 	SF_ps.Run (dbf_ps, _ps, cnf_ps, lit_ps); // 161 recs qualified
@@ -294,10 +297,11 @@ void q6 () {
 
 	SF_ps.WaitUntilDone ();
 	J.WaitUntilDone ();
-	G.WaitUntilDone ();
+    G.WaitUntilDone ();
 
 	Schema sum_sch ("sum_sch", 1, &DA);
 	int cnt = clear_pipe (_out, &sum_sch, true);
+	//int cnt = clear_pipe (_s_ps, &join_sch, true);
 	cout << " query6 returned sum for " << cnt << " groups (expected 25 groups)\n";
 }
 

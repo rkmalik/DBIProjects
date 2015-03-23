@@ -351,10 +351,14 @@ void GroupBy::Run (Pipe &inPipe, Pipe &outPipe, OrderMaker &groupAtts, Function 
     pthread_create(&thread,NULL,GroupByMethod,(void *)this);
 }
 
-
 void GroupBy::WaitUntilDone ()
 {
     pthread_join (thread, NULL);
+}
+
+void *JoinMethod(void* args) {
+    Join *join = (Join *)args;
+    join->PerformOperation();
 }
 
 void Join::Run (Pipe &inPipeL, Pipe &inPipeR, Pipe &outPipe, CNF &selOp, Record &literal)
@@ -364,15 +368,163 @@ void Join::Run (Pipe &inPipeL, Pipe &inPipeR, Pipe &outPipe, CNF &selOp, Record 
     outPutPipe = &outPipe;
     cnf = &selOp;
     lit  = &literal;
+    pthread_create(&thread,NULL,JoinMethod,(void *)this);
+}
+
+void Join::PerformOperation()
+{
+    OrderMaker orderMakerL;
+    OrderMaker orderMakerR;
+    Record * left=new Record;
+    Record * right=new Record;
+    Record *buffer = new Record;
+    ComparisonEngine ceng;
+    Pipe *outPipeLeft=new Pipe(100);
+    Pipe *outPipeRight=new Pipe(100);
+    vector<Record*> blockL;
+    vector<Record*> blockR;
+    Record *result=new Record;
+    int numOfAttsL;
+    int numOfAttsR;
+    int runlen = 12;
+    int record_count =0 ;
+    if((cnf)->GetSortOrders(orderMakerL,orderMakerR))
+    {
+        BigQ bqL (*inPipeLeft, *outPipeLeft, orderMakerL, runlen);
+        BigQ bqR (*inPipeRight, *outPipeRight, orderMakerR, runlen);
+        cout << "BigQ called"<<endl;
+        outPipeLeft->Remove(left);
+        outPipeRight->Remove(right);
+        bool leftEnd=false;
+        bool rightEnd=false;
+        numOfAttsL=((int *) left->bits)[1] / sizeof(int) -1;
+        numOfAttsR=((int *) right->bits)[1] / sizeof(int) -1;
+        int attsToKeep[numOfAttsL+numOfAttsR];
+        for(int i=0; i<numOfAttsL; i++)
+        {
+            attsToKeep[i]=i;
+        }
+        for(int i=0; i<numOfAttsR; i++)
+        {
+            attsToKeep[numOfAttsL+i]=i;
+        }
+       // cout<< "nums" << numOfAttsL <<endl;
+        while (true)
+        {
+            if(ceng.Compare(left,&orderMakerL,right,&orderMakerR)<0)
+            {
+                if(!outPipeLeft->Remove(left))
+                    break;
+            }
+            else if(ceng.Compare(left,&orderMakerL,right,&orderMakerR)>0)
+            {
+                if(!outPipeRight->Remove(right))
+                    break;
+            }
+            else
+            {
+                leftEnd=false;
+                rightEnd=false;
+                while(true)
+                {
+                    Record *prev=new Record;
+                    prev->Consume(left);
+                    blockL.push_back(prev);
+                    if(!(outPipeLeft->Remove (left)))
+                    {
+                        leftEnd=true;
+                        break;
+                    }
+                    if(ceng.Compare (prev, left,&orderMakerL) !=0)
+                    {
+                        break;
+                    }
+                }
+                while(true)
+                {
+                    Record *prev=new Record;
+                    prev->Consume(right);
+                    blockR.push_back(prev);
+                    if(!(outPipeRight->Remove (right)))
+                    {
+                        rightEnd=true;
+                        break;
+                    }
+                    if(ceng.Compare (prev,right,&orderMakerR) !=0)
+                    {
+                        break;
+                    }
+                }
+                for (int i = 0; i < blockL.size(); i++)
+                {
+                    for (int j = 0; j < blockR.size(); j++)
+                    {
+                        result->MergeRecords(blockL.at(i),blockR.at(j),numOfAttsL,numOfAttsR,attsToKeep,numOfAttsL+numOfAttsR,numOfAttsL);
+                        //cout<<"inserted a record"<<endl;
+                        record_count++;
+                        (outPutPipe)->Insert(result);
+                    }
+                    delete blockL.at(i);
+                }
+                for (int j = 0; j < blockR.size(); j++)
+                {
+                    delete blockR.at(j);
+                }
+                blockL.clear();
+                blockR.clear();
+                cout<< rightEnd << leftEnd << record_count << endl;
+                if(rightEnd || leftEnd)
+                    break;
+            }
+        }
+        cout<<"out of while"<<endl;
+        while(outPipeLeft->Remove(left))
+        {}
+        while(outPipeRight->Remove(left))
+        {}
+    }
+    else
+    {
+       // cout << "else part" <<endl;
+        while((inPipeRight)->Remove(right))
+        {
+            Record *temp=new Record;
+            temp->Consume(right);
+            blockR.push_back(temp);
+        }
+        (inPipeLeft)->Remove(left);
+        numOfAttsL=((int *) left->bits)[1] / sizeof(int) -1;
+        numOfAttsR=((int *) blockR.at(0)->bits)[1] / sizeof(int) -1;
+        cerr<<"numOfAttsL "<<numOfAttsL<<"numOfAttsR "<<numOfAttsR<<endl;
+        int attsToKeep[numOfAttsL+numOfAttsR];
+        for(int i=0; i<numOfAttsL; i++)
+        {
+            attsToKeep[i]=i;
+        }
+        for(int i=0; i<numOfAttsR; i++)
+        {
+            attsToKeep[numOfAttsL+i]=i;
+        }
+        int count=1;
+        do
+        {
+            for (int j = 0; j < blockR.size(); j++)
+            {
+                result->MergeRecords(left,blockR.at(j),numOfAttsL,numOfAttsR,attsToKeep,numOfAttsL+numOfAttsR,numOfAttsL);
+                (outPutPipe)->Insert(result);
+            }
+            cerr<<count++<<endl;
+        }
+        while((inPipeLeft)->Remove(left));
+    }
+    (outPutPipe)->ShutDown();
+    delete outPipeLeft;
+    delete outPipeRight;
+    delete result;
+    cout<<"Join Completed" << endl;
 }
 
 void Join::WaitUntilDone ()
 {
-
-}
-
-void Join::Use_n_Pages (int n)
-{
-
-
+    pthread_join (thread, NULL);
 }

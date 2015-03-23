@@ -77,12 +77,13 @@ class Join : public RelationalOp {
     Pipe*       outPutPipe;
     CNF*        cnf;
     Record*     lit;
+    pthread_t thread;
 
 	public:
 	void Run (Pipe &inPipeL, Pipe &inPipeR, Pipe &outPipe, CNF &selOp, Record &literal);
 	void WaitUntilDone ();
     void PerformOperation ();
-	void Use_n_Pages (int n);
+	void Use_n_Pages (int n){}
 };
 class DuplicateRemoval : public RelationalOp {
 	Pipe*       inputPipe;
