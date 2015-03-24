@@ -263,11 +263,20 @@ void GroupBy::PerformOperation ()
     double              doubleResult;
     double              doubleAttVal;
     int                 attCount = groupAttrs->numAtts;
-    int                 attKeep [groupAttrs->numAtts+1];
-    Record*             tempRecord1 = new Record ();
-    Record*             temp2;
-    Record*             temp3;
-    Record              rec[2];
+    int                 attKeep [attCount+1];
+
+
+    Record* sumRecord   = new Record;
+    Record* recLeft     = new Record;
+    Record* recRight    = new Record;
+    Record* tempRecord1 = new Record ();
+    Record* last        = NULL;
+    Record* prev        = NULL;
+    Record  rec[2];
+
+    cout << "Calliing Group By" << endl;
+
+
     //int                 recSwitch = 0;
     bool                recSwitch = false;
 
@@ -285,19 +294,18 @@ void GroupBy::PerformOperation ()
         recType = Double;
     }
 
-    Record *sumRecord = new Record;
-    Record *recLeft = new Record;
-    Record *recRight = new Record;
+
     int inserted = 0;
+    int counter = 0;
 
     // Loop till all the records from intermediate pipe are consumed
-    while (intermediatepipe->Remove(&rec [(int)recSwitch])){
-        temp3 = temp2;
-        temp2 = &rec [(int)recSwitch];
+    while (intermediatepipe->Remove(&rec [counter%2])){
+        prev = last;
+        last = &rec[counter%2];
 
-        if (temp3 && temp2) {
-            if (ceng.Compare (temp3, temp2, groupAttrs) !=0 ) {
-                compute->Apply(*temp3,intAttVal,doubleAttVal);
+        if (prev && last) {
+            if (ceng.Compare (prev, last, groupAttrs) !=0 ) {
+                compute->Apply(*prev,intAttVal,doubleAttVal);
 
                 if (compute->returnsInt) {
                     intResult = intResult + intAttVal;
@@ -306,14 +314,14 @@ void GroupBy::PerformOperation ()
                 }
 
                 recLeft->CreateRecord(recType,intResult,doubleResult);
-                sumRecord->MergeRecords(recLeft,temp3,1 ,((int *) temp3->bits)[1] / sizeof(int) -1, attKeep, (groupAttrs->numAtts)+1,1);
+                sumRecord->MergeRecords(recLeft,prev,1 ,((int *) prev->bits)[1] / sizeof(int) -1, attKeep, (groupAttrs->numAtts)+1,1);
                 outPutPipe->Insert(sumRecord);
                 intResult = 0;
                 doubleResult = 0;
                 inserted++;
             } else {
 
-                compute->Apply(*temp3,intAttVal,doubleAttVal);
+                compute->Apply(*prev,intAttVal,doubleAttVal);
 
                 if (compute->returnsInt) {
                     intResult = intResult + intAttVal;
@@ -322,10 +330,10 @@ void GroupBy::PerformOperation ()
                 }
             }
         }
-        recSwitch = !recSwitch;
+        counter++;
     }
 
-    compute->Apply(*temp3,intAttVal,doubleAttVal);
+    compute->Apply(*last,intAttVal,doubleAttVal);
 
     if (compute->returnsInt) {
         intResult = intResult + intAttVal;
@@ -334,12 +342,13 @@ void GroupBy::PerformOperation ()
     }
 
     recLeft->CreateRecord(recType,intResult,doubleResult);
-    sumRecord->MergeRecords(recLeft,temp3,1 ,((int *) temp3->bits)[1] / sizeof(int) -1, attKeep, (groupAttrs->numAtts)+1,1);
+    sumRecord->MergeRecords(recLeft,last,1 ,((int *) last->bits)[1] / sizeof(int) -1, attKeep, (groupAttrs->numAtts)+1,1);
     outPutPipe->Insert(sumRecord);
     inserted++;
     intermediatepipe->ShutDown();
-    inputPipe->ShutDown();
-    outPutPipe->ShutDown();
+    //inputPipe->ShutDown();
+    //outPutPipe->ShutDown();
+    cout << "Total Records Scanned in GroupBy : " << inserted << endl;
 }
 
 void GroupBy::Run (Pipe &inPipe, Pipe &outPipe, OrderMaker &groupAtts, Function &computeMe)
