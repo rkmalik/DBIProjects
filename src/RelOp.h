@@ -124,7 +124,7 @@ class GroupBy : public RelationalOp {
 	void Run (Pipe &inPipe, Pipe &outPipe, OrderMaker &groupAtts, Function &computeMe);
 	void WaitUntilDone ();
     void PerformOperation ();
-	void Use_n_Pages (int n) { runLen = n;}
+	void Use_n_Pages (int n) { runLen = 1;}
 };
 class WriteOut : public RelationalOp {
 	Pipe* inputPipe;
