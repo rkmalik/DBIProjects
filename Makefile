@@ -9,8 +9,15 @@ endif
 
 BIN = ./bin/
 SRC = ./src/
-test.out: Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o BaseFile.o HeapDBFile.o SortedDBFile.o Pipe.o BigQ.o RelOp.o Function.o y.tab.o yyfunc.tab.o lex.yy.o lex.yyfunc.o test.o
-	$(CC) -o $(./)test.out $(BIN)Record.o $(BIN)Comparison.o $(BIN)ComparisonEngine.o $(BIN)Schema.o $(BIN)File.o $(BIN)DBFile.o $(BIN)BaseFile.o  $(BIN)HeapDBFile.o $(BIN)SortedDBFile.o $(BIN)Pipe.o $(BIN)BigQ.o $(BIN)RelOp.o $(BIN)Function.o $(BIN)y.tab.o $(BIN)yyfunc.tab.o $(BIN)lex.yy.o $(BIN)lex.yyfunc.o $(BIN)test.o -lfl -lpthread
+
+a4-1.out: Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o BaseFile.o HeapDBFile.o SortedDBFile.o Pipe.o BigQ.o Statistics.o y.tab.o lex.yy.o test.o
+	$(CC) -o $(./)a4-1.out $(BIN)Record.o $(BIN)Comparison.o $(BIN)ComparisonEngine.o $(BIN)Schema.o $(BIN)File.o $(BIN)DBFile.o $(BIN)BaseFile.o  $(BIN)HeapDBFile.o $(BIN)SortedDBFile.o $(BIN)Pipe.o $(BIN)BigQ.o $(BIN)Statistics.o $(BIN)y.tab.o $(BIN)lex.yy.o $(BIN)test.o -lfl -lpthread
+	
+test.o: $(SRC)test.cc
+	$(CC) -g -c $(SRC)test.cc -o $(BIN)test.o
+
+test3.out: Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o BaseFile.o HeapDBFile.o SortedDBFile.o Pipe.o BigQ.o RelOp.o Function.o y.tab.o yyfunc.tab.o lex.yy.o lex.yyfunc.o test3.o
+	$(CC) -o $(./)test3.out $(BIN)Record.o $(BIN)Comparison.o $(BIN)ComparisonEngine.o $(BIN)Schema.o $(BIN)File.o $(BIN)DBFile.o $(BIN)BaseFile.o  $(BIN)HeapDBFile.o $(BIN)SortedDBFile.o $(BIN)Pipe.o $(BIN)BigQ.o $(BIN)RelOp.o $(BIN)Function.o $(BIN)y.tab.o $(BIN)yyfunc.tab.o $(BIN)lex.yy.o $(BIN)lex.yyfunc.o $(BIN)test3.o -lfl -lpthread
 
 test2-2.out: 	Record.o \
 			Comparison.o \
@@ -115,11 +122,15 @@ test2-1.o: $(SRC)test2-1.cc $(SRC)DBFile.cc
 test1.o: $(SRC)test1.cc $(SRC)DBFile.cc
 	$(CC) -g -c $(SRC)test1.cc -o $(BIN)test1.o
 
-test.o: $(SRC)test.cc
-	$(CC) -g -c $(SRC)test.cc -o $(BIN)test.o
+test3.o: $(SRC)test3.cc
+	$(CC) -g -c $(SRC)test3.cc -o $(BIN)test3.o
 
 #main.o: main.cc DBFile.cc
 #	$(CC) -g -c main.cc
+
+
+Statistics.o: $(SRC)Statistics.cc
+	$(CC) -g -c $(SRC)Statistics.cc -o $(BIN)Statistics.o
 
 Comparison.o: $(SRC)Comparison.cc
 	$(CC) -g -c $(SRC)Comparison.cc -o $(BIN)Comparison.o

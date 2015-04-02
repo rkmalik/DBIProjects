@@ -9,7 +9,7 @@ using namespace std;
 
 extern char *catalog_path = "./src/catalog";
 extern char *dbfile_dir = "./bin/dbfiles/";
-extern char *tpch_dir ="./bin/10M/";
+extern char *tpch_dir ="./bin/1G/";
 
 extern "C" {
 	int yyparse(void);   // defined in y.tab.c

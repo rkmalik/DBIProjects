@@ -543,3 +543,4 @@ void Join::WaitUntilDone ()
 {
     pthread_join (thread, NULL);
 }
+
